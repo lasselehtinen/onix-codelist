@@ -6,7 +6,9 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
-        "laravel/framework": "5.2.*"
+        "laravel/framework": "5.2.*",
+        "guzzlehttp/guzzle": "~6.0",
+        "league/uri": "^4.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
