@@ -49,15 +49,16 @@ class UpdateCodelists extends Command
      */
     public function handle()
     {
-        // Form URL to codelist
-        $url = $this->formUri(config('onix_codelist.issue_number'));
-        
-        // Send a request
-        $response = $this->client->request('GET', $url);
+        // Send a request to the JSON formatted codelist
+        $response = $this->client->request('GET', $this->formUri());
 
         // Parse codelists from response
         $onixCodelists = json_decode($response->getBody()->getContents());
         
+        // Disable Algolia auto-indexing temporarily
+        Codelist::$autoIndex = false;
+        Codelist::clearIndices();
+
         foreach ($onixCodelists->CodeList as $onixCodelist) {
             // Create or update codelist
             $codelist = Codelist::firstOrCreate(['number' => $onixCodelist->CodeListNumber]);
@@ -77,17 +78,20 @@ class UpdateCodelists extends Command
                 $code = Code::updateAndAttach($onixCodelist->Code, $codelist);
             }
         }
+
+        // Reindex Algolia and set settings
+        Codelist::reindex();
+        Codelist::setSettings();
     }
 
     /**
      * Form and URL to the JSON version of the codelist
-     * @param  int $issue_number
      * @return League\Uri\Schemes\Http
      */
-    public function formUri($issue_number)
+    public function formUri()
     {
         $uri = HttpUri::createFromString('http://www.editeur.org/files/ONIX for books - code lists/');
-        $modifier = new AppendSegment('ONIX_BookProduct_Codelists_Issue_' . $issue_number . '.json');
+        $modifier = new AppendSegment('ONIX_BookProduct_Codelists_Issue_' . config('onix_codelist.issue_number') . '.json');
         $newUri = $modifier->__invoke($uri);
         return $newUri;
     }

@@ -8,7 +8,8 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
         "guzzlehttp/guzzle": "~6.0",
-        "league/uri": "^4.1"
+        "league/uri": "^4.1",
+        "algolia/algoliasearch-laravel": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
