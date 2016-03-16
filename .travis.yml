@@ -16,7 +16,7 @@ services:
   - mysql
 
 install:
-   - composer update --prefer-dist --no-interaction --prefer-stable
+   - composer install
 
 before_script:
   - mysql -e 'create database onix_codelist_test;'
