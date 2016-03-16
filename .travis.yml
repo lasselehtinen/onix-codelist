@@ -11,25 +11,13 @@ env:
   - DB_DATABASE=onix_codelist_test
   - DB_USERNAME=travis
 
-matrix:
-  include:
-    - php: 5.5.9
-      env: setup=lowest
-    - php: 5.5.9
-      env: setup=stable
-
 sudo: false
 
 services:
   - mysql
 
 install:
-   - composer install
+   - composer update --prefer-dist --no-interaction --prefer-stable
 
 before_script:
   - mysql -e 'create database onix_codelist_test;'
-
-install:
-  - if [[ $setup = 'basic' ]]; then travis_retry composer install --no-interaction --prefer-dist; fi
-  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable; fi
-  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable; fi
