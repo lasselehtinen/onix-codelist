@@ -8,7 +8,6 @@ php:
   - hhvm
 
 env:
-  - VAR=VAL
   - DB_DATABASE=onix_codelist_test
   - DB_USERNAME=travis
 
@@ -23,6 +22,9 @@ sudo: false
 
 services:
   - mysql
+
+install:
+   - composer install
 
 before_script:
   - mysql -e 'create database onix_codelist_test;'
