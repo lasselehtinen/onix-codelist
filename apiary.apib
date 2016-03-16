@@ -1,0 +1,113 @@
+# Onix codelists
+
+# Onix codelists [/api/v1/codelist]
+
+## Show all codelists [GET /api/v1/codelist{?page,limit}]
+Get a JSON representation of all Onix codelists.
+
++ Parameters
+    + page (integer, optional) - The page of results to view.
+        + Default: 1
+    + limit (integer, optional) - The amount of results per page.
+        + Default: 25
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "id": 1,
+                "number": 1,
+                "description": "Notification or update type code",
+                "issue_number": 0
+            }
+
++ Response 422 (application/json)
+    + Body
+
+            {
+                "message": "Could not list codelists.",
+                "errors": {
+                    "page": [
+                        "The page must be a number."
+                    ]
+                },
+                "status_code": 422
+            }
+
++ Response 422 (application/json)
+    + Body
+
+            {
+                "message": "Could not list codelists.",
+                "errors": {
+                    "page": [
+                        "The page must be at least 1."
+                    ]
+                },
+                "status_code": 422
+            }
+
++ Response 422 (application/json)
+    + Body
+
+            {
+                "message": "Could not list codelists.",
+                "errors": {
+                    "limit": [
+                        "The limit must be a number."
+                    ]
+                },
+                "status_code": 422
+            }
+
++ Response 422 (application/json)
+    + Body
+
+            {
+                "message": "Could not list codelists.",
+                "errors": {
+                    "limit": [
+                        "The limit must be at least 1."
+                    ]
+                },
+                "status_code": 422
+            }
+
+## Show the specified Codelist. [GET /api/v1/codelist/{number}]
+Show a spesific codelist by the codelist number
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "id": 1,
+                "number": 1,
+                "description": "Notification or update type code",
+                "issue_number": 0
+            }
+
++ Response 422 (application/json)
+    + Body
+
+            {
+                "message": "Could not list codelist.",
+                "errors": {
+                    "number": [
+                        "The number must be a number."
+                    ]
+                },
+                "status_code": 422
+            }
+
++ Response 422 (application/json)
+    + Body
+
+            {
+                "message": "Could not list codelist.",
+                "errors": {
+                    "number": [
+                        "The selected number is invalid."
+                    ]
+                },
+                "status_code": 422
+            }
