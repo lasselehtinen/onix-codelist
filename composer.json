@@ -9,7 +9,8 @@
         "laravel/framework": "5.2.*",
         "guzzlehttp/guzzle": "~6.0",
         "league/uri": "^4.1",
-        "algolia/algoliasearch-laravel": "^1.0"
+        "algolia/algoliasearch-laravel": "^1.0",
+        "dingo/api": "1.0.x@dev"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

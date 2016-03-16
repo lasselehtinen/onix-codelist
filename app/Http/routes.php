@@ -1,5 +1,7 @@
 <?php
 
+use App\Codelist;
+
 /*
 |--------------------------------------------------------------------------
 | Routes File
@@ -11,8 +13,17 @@
 |
 */
 
+Route::resource('codelist', 'CodelistController', ['only' => ['index', 'show']]);
+
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('codelist.index');
+});
+
+$api = app('Dingo\Api\Routing\Router');
+
+$api->version('v1', function ($api) {
+    $api->get('/v1/codelist', 'App\Api\V1\Controllers\OnixCodelistController@index');
+    $api->get('/v1/codelist/{number}', 'App\Api\V1\Controllers\OnixCodelistController@show');
 });
 
 /*
