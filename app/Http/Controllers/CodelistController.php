@@ -16,7 +16,7 @@ class CodelistController extends Controller
      */
     public function index()
     {
-        $codelists = Codelist::paginate(25);
+        $codelists = Codelist::paginate(20);
         return view('codelists')->with('codelists', $codelists);
     }
 
@@ -30,5 +30,20 @@ class CodelistController extends Controller
     {
         $codelist = Codelist::where('number', $number)->firstOrFail();
         return view('codes')->with('codelist', $codelist);
+    }
+
+    public function search(Request $request)
+    {
+        $searchResults = Codelist::search($request->input('q'), ['hitsPerPage' => 9999]);
+
+        // Array to store the codelist numbers found in search results
+        $codelistNumbers = [];
+        foreach ($searchResults['hits'] as $hit) {
+            $codelistNumbers[] = $hit['number'];
+        }
+        
+        $codelists = Codelist::whereIn('number', $codelistNumbers)->paginate(20);
+
+        return view('codelists')->with('codelists', $codelists->appends($request->except('page')));
     }
 }

@@ -15,9 +15,13 @@ use App\Codelist;
 
 Route::resource('codelist', 'CodelistController', ['only' => ['index', 'show']]);
 
+Route::get('search', 'CodelistController@search');
+
 Route::get('/', function () {
     return redirect()->route('codelist.index');
 });
+
+// API routes
 
 $api = app('Dingo\Api\Routing\Router');
 
