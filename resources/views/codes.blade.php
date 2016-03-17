@@ -1,83 +1,30 @@
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-  <meta name="description" content="">
-  <meta name="author" content="">
+@extends('shared.master')
 
-  <title>Onix codelists</title>
+@section('title', 'Onix codelist ' . $codelist->number . ' - ' . $codelist->description)
 
-  <!-- Bootstrap core CSS -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/flatly/bootstrap.css" rel="stylesheet">
+@section('content')
+<h1>List {{ $codelist->number }}: {{ $codelist->description }}</h1>
 
-  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-      <![endif]-->
-    </head>
-
-    <body>
-
-      <nav class="navbar navbar-default">
-        <div class="container-fluid">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Onix codelists</a>
-          </div>
-
-          <!-- Collect the nav links, forms, and other content for toggling -->
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="/codelist">Codelists <span class="sr-only">(current)</span></a></li>
-              <li><a href="/api">API</a></li>
-              <li><a href="/about">About</a></li>
-            </ul>
-            <form class="navbar-form navbar-left" role="search" action="/search">
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search" name="q">
-              </div>
-              <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-           </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-      </nav>
-
-      <div class="container">
-        <h1>Onix codelists</h1>
-
-        <table class="table table-condensed table-hover">
-          <thead>
-            <tr>
-              <th>Value</th>
-              <th>Description</th>
-              <th>Notes</th>
-              <th>Issue number</th>              
-            </tr>
-          </thead>
-          <tbody>
-            @foreach ($codelist->codes as $code)
-            <tr>
-              <td>{{ $code->value }}</td>
-              <td>{{ $code->description }}</td>
-              <td>{{ $code->notes }}</td>
-              <td>{{ $code->issue_number }}</td>
-            </tr>
-            @endforeach            
-          </tbody>
-        </table>
-
-        <a href="{{ URL::previous() }}">Back to Codelists</a>
-
-      </div>
-
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>    
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    </body>
-    </html>
+<table class="table table-condensed table-hover">
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Description</th>
+      <th>Notes</th>
+      <th>Issue number</th>              
+    </tr>
+  </thead>
+  <tbody>
+    @foreach ($codelist->codes as $code)
+    <tr>
+      <td>{{ $code->value }}</td>
+      <td>{{ $code->description }}</td>
+      <td>{{ $code->notes }}</td>
+      <td>{{ $code->issue_number }}</td>
+    </tr>
+    @endforeach            
+  </tbody>
+</table>
+        
+<a href="{{ URL::previous() }}">Back to Codelists</a>
+@endsection
