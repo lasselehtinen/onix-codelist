@@ -13,14 +13,6 @@ use App\Codelist;
 |
 */
 
-Route::resource('codelist', 'CodelistController', ['only' => ['index', 'show']]);
-
-Route::get('search', 'CodelistController@search');
-
-Route::get('/', function () {
-    return redirect()->route('codelist.index');
-});
-
 // API routes
 
 $api = app('Dingo\Api\Routing\Router');
@@ -42,5 +34,11 @@ $api->version('v1', function ($api) {
 */
 
 Route::group(['middleware' => ['web']], function () {
-    //
+    Route::resource('codelist', 'CodelistController', ['only' => ['index', 'show']]);
+
+    Route::get('search', 'CodelistController@search');
+
+    Route::get('/', function () {
+        return redirect()->route('codelist.index');
+    });
 });
