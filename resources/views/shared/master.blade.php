@@ -9,6 +9,12 @@
 
   <title>@yield('title')</title>
 
+  <style type="text/css">
+  .navbar-default .navbar-form {width: 50%;}
+  .navbar-form .form-group {display: block !important;}
+  .navbar-default .navbar-collapse {padding-right: 0;}
+  </style>
+
   <!-- Bootstrap core CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/flatly/bootstrap.css" rel="stylesheet">
   <link href="{{ url('algolia-autocomplete.css') }}" rel="stylesheet">
@@ -44,7 +50,7 @@
               <li class="{{ active_class(if_uri(['api-docs']), 'active') }}"><a href="/api-docs">API</a></li>
               <li class="{{ active_class(if_uri(['about']), 'active') }}"><a href="/about">About</a></li>
             </ul>
-            <form class="navbar-form navbar-left" role="search" action="/search">
+            <form class="navbar-form navbar-left" role="search" action="/search" style="width: 50%">
               <div class="form-group">
                   <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
               </div>
