@@ -32,6 +32,11 @@ class CodelistController extends Controller
         return view('codes')->with('codelist', $codelist);
     }
 
+    /**
+     * Rudimentary search through Algolia
+     * @param  Request $request
+     * @return Response
+     */
     public function search(Request $request)
     {
         $searchResults = Codelist::search($request->input('q'), ['hitsPerPage' => 9999]);
