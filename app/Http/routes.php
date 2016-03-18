@@ -22,6 +22,10 @@ Route::group(['middleware' => ['web']], function () {
         return response()->view('api-docs');
     });
 
+    Route::get('/about', function () {
+        return response()->view('about');
+    });
+
     Route::get('/', function () {
         return redirect()->route('codelist.index');
     });
