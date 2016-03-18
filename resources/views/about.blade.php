@@ -9,6 +9,4 @@
 is indexed with codelists and codelist code descriptions and notes. I hope you might find this service useful. The site is built on
 <a href="http://laravel.com">Laravel</a> and the <a href="https://github.com/lasselehtinen/onix-codelist">source code is provided as open-source</a>
 with MIT license in Github. So please <a href="https://github.com/lasselehtinen/onix-codelist/issues">create an issue</a> if you have any wishes.</p>
-
-<a href="{{ URL::previous() }}">Back to Codelists</a>
 @endsection
