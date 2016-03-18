@@ -78,7 +78,7 @@
         // autocomplete.js initialization
         autocomplete('#search-input', {hint: true}, [
           {
-            source: autocomplete.sources.hits(codelists, {hitsPerPage: 3}),
+            source: autocomplete.sources.hits(codelists, {hitsPerPage: 7}),
             displayKey: 'description',
             templates: {
               header: '<div class="category">Codelists</div>',
