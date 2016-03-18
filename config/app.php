@@ -157,6 +157,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         AlgoliaSearch\Laravel\AlgoliaServiceProvider::class,
         Dingo\Api\Provider\LaravelServiceProvider::class,
+        HieuLe\Active\ActiveServiceProvider::class,
 
     ],
 
@@ -203,6 +204,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'Active' => HieuLe\Active\Facades\Active::class,
 
     ],
 
