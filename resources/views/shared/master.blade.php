@@ -11,6 +11,7 @@
 
   <!-- Bootstrap core CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/flatly/bootstrap.css" rel="stylesheet">
+  <link href="{{ url('algolia-autocomplete.css') }}" rel="stylesheet">
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -37,19 +38,20 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-              <li class="active"><a href="/codelist">Codelists <span class="sr-only">(current)</span></a></li>
-              <li><a href="/api">API</a></li>
-              <li><a href="/about">About</a></li>
+              <li class="{{ active_class(if_uri(['codelist']), 'active') }}"><a href="/codelist">Codelists</a></li>
+              <li class="{{ active_class(if_uri(['api-docs']), 'active') }}"><a href="/api-docs">API</a></li>
+              <li class="{{ active_class(if_uri(['about']), 'active') }}"><a href="/about">About</a></li>
             </ul>
             <form class="navbar-form navbar-left" role="search" action="/search">
               <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search" name="q">
+                  <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
               </div>
-              <button type="submit" class="btn btn-default">Submit</button>
             </form>
-           </div><!-- /.navbar-collapse -->
+          </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
       </nav>
+
+      <a href="https://github.com/lasselehtinen/onix-codelist"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
 
       <div class="container">
         @yield('content')
@@ -57,5 +59,49 @@
 
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>    
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+      <script src="//cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
+      <script src="//cdn.jsdelivr.net/hogan.js/3.0/hogan.min.js"></script>
+      <script src="//cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script>
+      <script>
+        var client = algoliasearch("0AX2Y3FFW8", "ed59fb1126ff48502e68207c0488c5ba");
+        var codelists = client.initIndex('codelists');
+        var codes = client.initIndex('codes');
+
+        // Mustache templating by Hogan.js (http://mustache.github.io/)
+        var templateCodelist = Hogan.compile('<div class="codelist">' +
+          '<div class="name">@{{{ _highlightResult.description.value }}} <small>(@{{ codelist.description }})</small></div></div>');
+        var templateCode = Hogan.compile('<div class="code">' +
+          '<div class="name">@{{{ _highlightResult.description.value }}}</div></div>');
+
+        // autocomplete.js initialization
+        autocomplete('#search-input', {hint: true}, [
+          {
+            source: autocomplete.sources.hits(codelists, {hitsPerPage: 3}),
+            displayKey: 'description',
+            templates: {
+              header: '<div class="category">Codelists</div>',
+              suggestion: function(hit) {
+                // render the hit using Hogan.js
+                return templateCode.render(hit);
+              }
+            }
+          },
+          {
+            source: autocomplete.sources.hits(codes, {hitsPerPage: 5}),
+            displayKey: 'description',
+            templates: {
+              header: '<div class="category">Codes</div>',
+              suggestion: function(hit) {
+                // render the hit using Hogan.js
+                return templateCodelist.render(hit);
+              }
+            }
+          }
+
+        ]).on('autocomplete:selected', function(event, suggestion, dataset) {
+          window.location.href = '/codelist/' + suggestion.number;
+        });
+      </script>
+
     </body>
     </html>
