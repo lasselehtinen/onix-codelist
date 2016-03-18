@@ -4,26 +4,6 @@ use App\Codelist;
 
 /*
 |--------------------------------------------------------------------------
-| Routes File
-|--------------------------------------------------------------------------
-|
-| Here is where you will register all of the routes in an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the controller to call when that URI is requested.
-|
-*/
-
-// API routes
-
-$api = app('Dingo\Api\Routing\Router');
-
-$api->version('v1', function ($api) {
-    $api->get('/v1/codelist', 'App\Api\V1\Controllers\OnixCodelistController@index');
-    $api->get('/v1/codelist/{number}', 'App\Api\V1\Controllers\OnixCodelistController@show');
-});
-
-/*
-|--------------------------------------------------------------------------
 | Application Routes
 |--------------------------------------------------------------------------
 |
@@ -38,7 +18,20 @@ Route::group(['middleware' => ['web']], function () {
 
     Route::get('search', 'CodelistController@search');
 
+    Route::get('/api-docs', function () {
+        return response()->view('api-docs');
+    });
+
     Route::get('/', function () {
         return redirect()->route('codelist.index');
     });
+});
+
+// API routes
+
+$api = app('Dingo\Api\Routing\Router');
+
+$api->version('v1', function ($api) {
+    $api->get('/v1/codelist', 'App\Api\V1\Controllers\OnixCodelistController@index');
+    $api->get('/v1/codelist/{number}', 'App\Api\V1\Controllers\OnixCodelistController@show');
 });
