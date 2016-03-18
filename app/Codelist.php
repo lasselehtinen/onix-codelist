@@ -16,8 +16,6 @@ class Codelist extends Model
         'attributesToIndex' => [
             'description',
             'number',
-            'codes.description',
-            'codes.notes',
         ],
     ];
 
@@ -34,15 +32,5 @@ class Codelist extends Model
     public function codes()
     {
         return $this->hasMany('App\Code');
-    }
-
-    public function getAlgoliaRecord()
-    {
-        /**
-         * Load the categories relation so that it's available
-         *  in the laravel toArray method
-         */
-        $this->codes;
-        return $this->toArray();
     }
 }

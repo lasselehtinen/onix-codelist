@@ -57,6 +57,7 @@ class UpdateCodelists extends Command
         
         // Disable Algolia auto-indexing temporarily
         Codelist::$autoIndex = false;
+        Code::$autoIndex = false;
 
         foreach ($onixCodelists->CodeList as $onixCodelist) {
             // Create or update codelist
@@ -79,10 +80,14 @@ class UpdateCodelists extends Command
         }
 
         // Reindex Algolia and set settings
-        if (app()->environment() === 'production') {
+        if (app()->environment() === 'development') {
             Codelist::clearIndices();
             Codelist::reindex();
             Codelist::setSettings();
+
+            Code::clearIndices();
+            Code::reindex();
+            Code::setSettings();
         }
     }
 
