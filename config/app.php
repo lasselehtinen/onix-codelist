@@ -158,7 +158,7 @@ return [
         AlgoliaSearch\Laravel\AlgoliaServiceProvider::class,
         Dingo\Api\Provider\LaravelServiceProvider::class,
         HieuLe\Active\ActiveServiceProvider::class,
-
+        Ipunkt\LaravelAnalytics\AnalyticsServiceProvider::class,
     ],
 
     /*
@@ -205,7 +205,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Active' => HieuLe\Active\Facades\Active::class,
-
+        'Analytics' => Ipunkt\LaravelAnalytics\AnalyticsFacade::class,
     ],
 
 ];

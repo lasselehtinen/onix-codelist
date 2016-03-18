@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4e2f6861e68d2ef2b0deb0771c65be9e",
-    "content-hash": "a4db0edeb0ca34b811a726f6756ddb42",
+    "hash": "8084575dc0e483c85fb3a26edca1e16a",
+    "content-hash": "f1f6b90d72019be2547c276219fccead",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -169,7 +169,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/de7bbb4d64777b6cdb7800eab178db867165c3e0",
+                "url": "https://api.github.com/repos/dingo/api/zipball/70d27464541d247a30fefb28a01800298ce409da",
                 "reference": "de7bbb4d64777b6cdb7800eab178db867165c3e0",
                 "shasum": ""
             },
@@ -847,6 +847,59 @@
                 "routing"
             ],
             "time": "2016-01-09 03:12:24"
+        },
+        {
+            "name": "ipunkt/laravel-analytics",
+            "version": "1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ipunkt/laravel-analytics.git",
+                "reference": "9c4f72167deacc2aa95bec48a0e99c0ed49dea69"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ipunkt/laravel-analytics/zipball/9c4f72167deacc2aa95bec48a0e99c0ed49dea69",
+                "reference": "9c4f72167deacc2aa95bec48a0e99c0ed49dea69",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/config": "~4.0|~5.0",
+                "illuminate/session": "~4.0|~5.0",
+                "illuminate/support": "~4.0|~5.0",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "laravel/framework": "~4.0|~5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Ipunkt\\LaravelAnalytics\\": "src/"
+                },
+                "files": [
+                    "src/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Robert Kummer",
+                    "email": "r.kummer@ipunkt.biz"
+                }
+            ],
+            "description": "Analytics tracking for Laravel",
+            "keywords": [
+                "analytics",
+                "google analytics",
+                "javascript",
+                "laravel",
+                "php",
+                "statistics"
+            ],
+            "time": "2015-11-18 19:52:14"
         },
         {
             "name": "jakub-onderka/php-console-color",
