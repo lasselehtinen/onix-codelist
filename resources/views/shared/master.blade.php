@@ -34,7 +34,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand">Onix codelist</a>
+            <a class="navbar-brand">Onix codelists</a>
           </div>
 
           <!-- Collect the nav links, forms, and other content for toggling -->
