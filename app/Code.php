@@ -3,9 +3,23 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use AlgoliaSearch\Laravel\AlgoliaEloquentTrait;
 
 class Code extends Model
 {
+    use AlgoliaEloquentTrait;
+
+    public static $autoIndex = true;
+    public static $autoDelete = true;
+
+    public $algoliaSettings = [
+        'attributesToIndex' => [
+            'value',
+            'description',
+            'notes',
+        ],
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -36,5 +50,15 @@ class Code extends Model
         ]);
 
         return $code;
+    }
+
+    public function getAlgoliaRecord()
+    {
+        /**
+         * Load the categories relation so that it's available
+         *  in the laravel toArray method
+         */
+        $this->number = $this->codelist->number;
+        return $this->toArray();
     }
 }
