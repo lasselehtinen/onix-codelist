@@ -52,12 +52,12 @@ class Code extends Model
         return $code;
     }
 
+    /**
+     * Append codelist number to Algolia record
+     * @return void
+     */
     public function getAlgoliaRecord()
     {
-        /**
-         * Load the categories relation so that it's available
-         *  in the laravel toArray method
-         */
         $this->number = $this->codelist->number;
         return $this->toArray();
     }
