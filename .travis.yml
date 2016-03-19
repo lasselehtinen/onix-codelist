@@ -10,7 +10,7 @@ php:
 env:
   - DB_DATABASE=onix_codelist_test DB_USERNAME=travis
 
-sudo: false
+sudo: required
 
 services:
   - mysql
