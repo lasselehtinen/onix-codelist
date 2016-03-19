@@ -26,11 +26,11 @@ addons:
 
 install:
   - composer install
-  - sudo travis/install-nginx.sh
+  - sudo lasselehtinen/onix-codelist/travis/install-nginx.sh
 
 script:
   - composer self-update
   - composer install --no-interaction --prefer-source --dev
   - mysql -e 'create database onix_codelist_test;'
-  - curl -vsf 'http://localhost:8080/hello.php' &> /dev/stdout
+  - curl -vsf 'http://localhost' &> /dev/stdout
   - cat /tmp/error.log
