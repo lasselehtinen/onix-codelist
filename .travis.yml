@@ -1,19 +1,18 @@
 language: php
 
 php:
-  - 5.5.9
-  - 5.5
-  - 5.6
-  - 7.0
-  - hhvm
+    - 5.4
+    - 5.5
+    - 5.6
+    - 7.0
+    - hhvm
 
-env:
-  - DB_DATABASE=onix_codelist_test DB_USERNAME=travis
+sudo: false
 
-sudo: required
-
-services:
-  - mysql
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: hhvm
 
 cache:
   - apt
@@ -25,12 +24,9 @@ addons:
       - realpath
 
 install:
-  - composer install
-  - sudo lasselehtinen/onix-codelist/travis/install-nginx.sh
+#  - composer install
+  - travis/install-nginx.sh
 
 script:
-  - composer self-update
-  - composer install --no-interaction --prefer-source --dev
-  - mysql -e 'create database onix_codelist_test;'
-  - curl -vsf 'http://localhost' &> /dev/stdout
+  - curl -vsf 'http://localhost:8080/hello.php' &> /dev/stdout
   - cat /tmp/error.log
