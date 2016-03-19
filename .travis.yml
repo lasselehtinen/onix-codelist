@@ -10,7 +10,7 @@ php:
 env:
   - DB_DATABASE=onix_codelist_test DB_USERNAME=travis
 
-sudo: false
+sudo: required
 
 services:
   - mysql
@@ -26,7 +26,7 @@ addons:
 
 install:
   - composer install
-  - travis/install-nginx.sh
+  - sudo travis/install-nginx.sh
 
 script:
   - composer self-update
