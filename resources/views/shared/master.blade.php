@@ -77,7 +77,7 @@
 
         // Mustache templating by Hogan.js (http://mustache.github.io/)
         var templateCodelist = Hogan.compile('<div class="codelist">' +
-          '<div class="name">@{{{ _highlightResult.description.value }}} <small>(@{{ codelist.description }})</small></div></div>');
+          '<div class="name">@{{{ _highlightResult.description.value }}} <small>(Codelist @{{ codelist.number }}: @{{ codelist.description }})</small></div></div>');
         var templateCode = Hogan.compile('<div class="code">' +
           '<div class="name">@{{{ _highlightResult.description.value }}}</div></div>');
 
