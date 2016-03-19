@@ -80,7 +80,7 @@ class UpdateCodelists extends Command
         }
 
         // Reindex Algolia and set settings
-        if (app()->environment() === 'development') {
+        if (app()->environment() === 'production') {
             Codelist::clearIndices();
             Codelist::reindex();
             Codelist::setSettings();
