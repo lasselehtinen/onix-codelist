@@ -62,7 +62,7 @@ class OnixCodelistController extends Controller
      *
      * Show a spesific codelist by the codelist number.
      *
-     * @Get("/{number,?include}")
+     * @Get("/{number}?include={include}")
      * @Versions({"v1"})
      * @Parameters({
      *      @Parameter("number", type="integer", required=true, description="Number of the codelist"),
