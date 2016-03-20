@@ -66,7 +66,7 @@ class OnixCodelistController extends Controller
      * @Versions({"v1"})
      * @Parameters({
      *      @Parameter("number", type="integer", required=true, description="Number of the codelist"),
-     *      @Parameter("include", type="enum", description="Available additional details to request.", members={
+     *      @Parameter("include", type="enum", description="Available additional details to request.", default="codes", members={
      *          @Member("codes", description="The code values that the codelist has")
      *      })
      * })
