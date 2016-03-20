@@ -55,9 +55,9 @@ class OnixCodelistController extends Controller
     }
 
     /**
-     * Show the specified Codelist.
+     * Show the specified Codelist
      *
-     * Show a spesific codelist by the codelist number
+     * Show a spesific codelist by the codelist number.
      *
      * @Get("/{number}")
      * @Versions({"v1"})
