@@ -29,7 +29,7 @@ class OnixCodelistController extends Controller
      * @Parameters({
      *      @Parameter("page", type="integer", description="The page of results to view.", default=1),
      *      @Parameter("limit", type="integer", description="The amount of results per page.", default=25),
-     *      @Parameter("include", type="enum", description="Available additional details to request.", members={
+     *      @Parameter("include", type="enum", description="Available additional details to request.", default="codes", members={
      *          @Member("codes", description="The code values that the codelist has")
      *      })
      * })
