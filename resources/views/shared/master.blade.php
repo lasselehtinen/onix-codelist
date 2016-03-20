@@ -67,45 +67,47 @@
 
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>    
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-      <script src="//cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
+      <script src="http://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
       <script src="//cdn.jsdelivr.net/hogan.js/3.0/hogan.min.js"></script>
-      <script src="//cdn.jsdelivr.net/autocomplete.js/0/autocomplete.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>  
+      <script src="http://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
       <script>
-        var client = algoliasearch("0AX2Y3FFW8", "ed59fb1126ff48502e68207c0488c5ba");
+        var client = algoliasearch('0AX2Y3FFW8', 'ed59fb1126ff48502e68207c0488c5ba')
         var codelists = client.initIndex('codelists');
         var codes = client.initIndex('codes');
 
         // Mustache templating by Hogan.js (http://mustache.github.io/)
         var templateCodelist = Hogan.compile('<div class="codelist">' +
-          '<div class="name">@{{{ _highlightResult.description.value }}} <small>(Codelist @{{ codelist.number }}: @{{ codelist.description }})</small></div></div>');
-        var templateCode = Hogan.compile('<div class="code">' +
-          '<div class="name">@{{{ _highlightResult.description.value }}}</div></div>');
+          '<div class="description">@{{{ _highlightResult.description.value }}}</div>' +
+        '</div>');
 
-        // autocomplete.js initialization
-        autocomplete('#search-input', {hint: true}, [
+        var templateCode = Hogan.compile('<div class="code">' +
+          '<div class="description">@{{{ _highlightResult.description.value }}} <small>(Codelist @{{ codelist.number }}: @{{ codelist.description }})</small></div>' +
+        '</div>');
+
+        $('#search-input').autocomplete({ hint: false }, [
           {
-            source: autocomplete.sources.hits(codelists, {hitsPerPage: 7}),
+            source: $.fn.autocomplete.sources.hits(codelists, { hitsPerPage: 5 }),
             displayKey: 'description',
             templates: {
               header: '<div class="category">Codelists</div>',
               suggestion: function(hit) {
                 // render the hit using Hogan.js
-                return templateCode.render(hit);
+                return templateCodelist.render(hit);
               }
             }
           },
           {
-            source: autocomplete.sources.hits(codes, {hitsPerPage: 5}),
+            source: $.fn.autocomplete.sources.hits(codes, { hitsPerPage: 5 }),
             displayKey: 'description',
             templates: {
               header: '<div class="category">Codes</div>',
               suggestion: function(hit) {
                 // render the hit using Hogan.js
-                return templateCodelist.render(hit);
+                return templateCode.render(hit);
               }
             }
-          }
-
+          }          
         ]).on('autocomplete:selected', function(event, suggestion, dataset) {
           window.location.href = '/codelist/' + suggestion.number;
         });
