@@ -9,12 +9,18 @@ use GuzzleHttp\Client;
 
 class UpdateCodelistsTest extends TestCase
 {
+    protected static $databaseSeeded = false;
+
     public function setUp()
     {
         parent::setUp();
-        Artisan::call('migrate:refresh');
-        $exitCode = Artisan::call('update:codelists');
-        $this->assertEquals(0, $exitCode, 'Running php artisan update:codelist returned exit code !== 0');
+
+        // Migrate and seed the database
+        if (self::$databaseSeeded === false) {
+            Artisan::call('migrate:refresh');
+            Artisan::call('update:codelists');
+            self::$databaseSeeded = true;
+        }
     }
 
     /**
