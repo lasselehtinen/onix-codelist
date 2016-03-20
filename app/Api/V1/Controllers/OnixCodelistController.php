@@ -24,11 +24,14 @@ class OnixCodelistController extends Controller
      *
      * Get a JSON representation of all Onix codelists.
      *
-     * @Get("/{?page,limit}")
+     * @Get("/{?page,limit,include}")
      * @Versions({"v1"})
      * @Parameters({
      *      @Parameter("page", type="integer", description="The page of results to view.", default=1),
-     *      @Parameter("limit", type="integer", description="The amount of results per page.", default=25)
+     *      @Parameter("limit", type="integer", description="The amount of results per page.", default=25),
+     *      @Parameter("include", type="enum", description="Available additional details to request.", members={
+     *          @Member("codes", description="The code values that the codelist has")
+     *      })
      * })
      * @Transaction({
      *      @Response(200, body={"id":1,"number":1,"description":"Notification or update type code","issue_number":0}),
@@ -59,8 +62,14 @@ class OnixCodelistController extends Controller
      *
      * Show a spesific codelist by the codelist number.
      *
-     * @Get("/{number}")
+     * @Get("/{number,?include}")
      * @Versions({"v1"})
+     * @Parameters({
+     *      @Parameter("number", type="integer", required=true, description="Number of the codelist"),
+     *      @Parameter("include", type="enum", description="Available additional details to request.", members={
+     *          @Member("codes", description="The code values that the codelist has")
+     *      })
+     * })
      * @Transaction({
      *      @Response(200, body={"id":1,"number":1,"description":"Notification or update type code","issue_number":0}),
      *      @Response(422, body={"message":"Could not list codelist.","errors":{"number":{"The number must be a number."}},"status_code":422}),

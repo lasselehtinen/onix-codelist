@@ -1,10 +1,11 @@
 FORMAT: 1A
+HOST: http://onix-codelists.io
 
-# Onix codelists
+# onix-codelists.io
 
 # Onix codelists [/api/v1/codelist]
 
-## Show all codelists [GET /api/v1/codelist{?page,limit}]
+## Show all codelists [GET /api/v1/codelist{?page,limit,include}]
 Get a JSON representation of all Onix codelists.
 
 + Parameters
@@ -12,6 +13,9 @@ Get a JSON representation of all Onix codelists.
         + Default: 1
     + limit (integer, optional) - The amount of results per page.
         + Default: 25
+    + include (enum[enum], optional) - Available additional details to request.
+        + Members
+            + `codes` - The code values that the codelist has
 
 + Response 200 (application/json)
     + Body
@@ -75,8 +79,14 @@ Get a JSON representation of all Onix codelists.
                 "status_code": 422
             }
 
-## Show the specified Codelist. [GET /api/v1/codelist/{number}]
-Show a spesific codelist by the codelist number
+## Show the specified Codelist [GET /api/v1/codelist/{number,?include}]
+Show a spesific codelist by the codelist number.
+
++ Parameters
+    + number (integer, required) - Number of the codelist
+    + include (enum[enum], optional) - Available additional details to request.
+        + Members
+            + `codes` - The code values that the codelist has
 
 + Response 200 (application/json)
     + Body
