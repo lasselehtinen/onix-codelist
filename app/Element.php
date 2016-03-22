@@ -16,6 +16,7 @@ class Element extends Model
         'attributesToIndex' => [
             'reference_name',
             'short_name',
+            'codelist.description'
         ],
         'disableTypoToleranceOnAttributes' => [
             'short_name'
