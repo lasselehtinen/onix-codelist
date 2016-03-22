@@ -73,7 +73,7 @@ class UpdateElements extends Command
         }
 
         // Reindex Algolia and set settings
-        if (app()->environment() === 'development') {
+        if (app()->environment() === 'production') {
             Element::clearIndices();
             Element::reindex();
             Element::setSettings();
