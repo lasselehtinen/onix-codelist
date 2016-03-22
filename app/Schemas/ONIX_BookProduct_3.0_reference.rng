@@ -1,0 +1,4804 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+	**************************************************
+	*                                                *
+	*               ONIX INTERNATIONAL               *
+	*                                                *
+	*     BOOK PRODUCT INFORMATION MESSAGE SCHEMA    *
+	*                                                *
+	*                STRUCTURE MODULE                *
+	*                 RELAX NG SCHEMA                *
+	*              REFERENCE TAG VERSION             *
+	*                                                *
+	*          Original author: Francis Cave         *
+	*          Recent revisions: Graham Bell         *
+	*                                                *
+	*                  Release 3.0                   *
+	*                   Revision 2                   *
+	*                Status: RELEASED                *
+	*            Release date: 2009-04-09            *
+	*              Revised: 2015-01-24               *
+	*                                                *
+	*             (c) 2000-2016 EDItEUR              *
+	*             http://www.editeur.org/            *
+	*                                                *
+	**************************************************
+
+
+	TERMS AND CONDITIONS OF USE OF THE ONIX BOOK PRODUCT INFORMATION MESSAGE SCHEMA
+
+	All ONIX standards and documentation are copyright materials, made available
+	free of charge for general use. If you use any version of the ONIX Book Product
+	Information Message Schema, you will be deemed to have accepted these terms and
+	conditions:
+
+	1. You agree that you will not add to, delete from or amend any version of the 
+	ONIX Product Information Message Schema, or any part of the Schema except for 
+	strictly internal use within your own organisation.
+
+	2. You agree that if you wish to add to, amend, or make extracts of any version 
+	of the Schema for any purpose that is not strictly internal to your own organisation, 
+	you will in the first instance notify EDItEUR and allow EDItEUR to review 
+	and comment on your proposed use, in the interest of securing an orderly 
+	development of the Schema for the benefit of other users.
+
+	A full licence agreement (DOI: 10.4400/nwgj) that governs use of EDItEUR’s ONIX
+	documentation, DTDs and schemas is available on the EDItEUR website.
+
+	If you do not accept these terms, you must not use any version of the ONIX Product 
+	Information Message Schema.
+
+	Full copies of all published versions of the latest release of this Schema and all 
+	associated documentation are available from the EDItEUR web site, where may also be 
+	found details of how to contact EDItEUR for advice on the use of this Schema. The URL 
+	for the EDItEUR web site is:
+
+	http://www.editeur.org/
+
+
+	SCHEMA REVISION HISTORY (IN REVERSE CHRONOLOGICAL ORDER)
+
+	2016-01-24: 1. enforce positive (>= 0), strict positive (> 0) or percentage (0..100) real numbers in various fields
+	            2. enforce positive (0, 1, 2…) or strict positive (1, 2, 3…) integers in various fields
+
+	               note these changes were included in 'strict' version of schema from 2015-01-24
+
+	2015-07-29: corrected Flow to dt.NonEmptyString in ConferenceName to match documentation
+
+	2014-11-23: enforce 'either <ComponentTypeName> or <TitleDetail> or both' in <ContentItem>
+
+	2014-01-24: ONIX for Books 3.0 revision 2
+	            1. added <NoPrefix> within <TitleElement>
+	            2. added <LocationName> within <ContributorPlace>
+	            3. added <Proximity> within <Stock> - uses List 215
+	            4. changed cardinality of <StockQuantityCoded> to 1…n to allow coded values for OnOrder and CBO etc.
+	            5. added <Velocity> within <Stock>
+	            6. added <VelocityMetric> within <Velocity> - uses List 216
+	            7. added <Rate> and <Proximity> within <Velocity>
+	            8. added <SalesRestriction> within <SalesRights>
+	            9. added <ProductIdentifier> within <PriceCondition>
+	           10. added <PrizeStatement> within <Prize>
+	           11. added <PriceIdentifier> within <Price>
+	           12. added <PriceIDType> within <PriceIdentifier> - uses list 217
+	           13. added <NoProduct/> to support explicitly empty delta updates
+	           14. added <EpubLicense> composite after <EpubUsageConstraint>, to support e-book licenses
+	           15. added <EpubLicenseName> inside <EpubLicense>
+	           16. added <EpubLicenseExpression> inside <EpubLicense>
+	           17. added <EpubLicenseExpressionType> within <EpubLicenseExpression> - uses list 218
+	           18. added <EpubLicenseExpressionTypeName within <EpubLicenseExpression>
+	           19. added <EpubLicenseExpressionLink> within <EpubLicenceExpression>
+	           20. added <CopyrightType> within <CopyrightStatement> - uses list 219
+	           21. added <SupplierCodeTypeName> in <SupplierOwnCoding>
+	           22. added <ToQuantity> within <Discount>
+	           23. changed cardinality on <PromotionCampaign>, <InitialPrintRun>,<CopiesSold>, <BookClubAdoption>, <PrizeName>, <ListName>, <SourceTitle>
+	           24. added textformat attribute to <EditionStatement> and changed data type to flow
+	           25. added language attribute to <SourceTitle>, <PartNumber>, ImprintName>, <CityOfPublication>, <ConferencePlace> and to 12 contributor name elements
+	           26. added textscript attribute to <PartNumber>, <TitleText>, <TitlePrefix>, <TitleWithoutPrefix>, <Subtitle>
+	           27. enforce '<ContributorStatement> must be preceded by <Contributor>' within <Collection> (ensures P.5 matches P.7)
+	           28. enforce '<SourceTitle> mandatory except where <ListName> is present' in <CitedContent>
+
+	2013-07-19  relax URI requirements to allow relative URIs
+
+	2013-04-24  1. enforce 'either <ConferenceSponsorIdentifier>, or either a personal or corporate name, or both' in <ConferenceSponsor>
+	            2. enforce 'either <NameIdentifier> alone, or personal name or corporate name with or without <NameIdentifier>, or <UnnamedPersons>' in <Contributor>, <AlternativeName> and <NameAsSubject>
+	            3. corrected dt.NonEmptyString to dt.Decimal in <PriceAmount>
+	            4. enforce http or ftp protocol in <ResourceLink>, http:// can be omitted in <Weblink>
+	            5. enforce at least one non-whitespace character in dt.NonEmptyString
+
+	2013-01-25  1. corrected long-standing error in the content model of <TextContent>: <TextAuthor> is repeatable
+	            2. enforce 'either <TaxRatePercent> or <TaxAmount>, or both' in <Tax>
+	            3. enforce URIs cannot be empty strings (must contain '://')
+
+	2012-10-25  1. enforce 'either <CopyrightOwnerIdentifier> or a personal or corporate name, or both'  in <CopyrightOwner>
+	            2. enforce 'either <SubjectCode> or <SubjectHeadingText> or both' in <Subject>
+	            3. enforce 'at least one of <PartNumber>, <YearOfAnnual>, or either <TitleText> or <TitlePrefix> plus <TitleWithoutPrefix>' in <TitleElement>
+	            4. enforce '<PublishingStatusNote must be preceded by the <PublishingStatus> element'
+	            5. enforce '<ROWSalesRightsType> must be preceded by a <SalesRights> element'
+	            6. modify <RelatedProduct> to disallow <ProductFormDetail> without <ProductForm>
+	            7. changed xs:token to xs:string in dt.DateOrDateTime, dt.Year, dt.YearOrYearRange, dt.MultiLevelNumber (token will validate even when there is leading or trailing whitespace)
+	            8. changed dt.NonEmptyString to dt.Integer in ConferenceNumber, LatestReprintNumber, NumberOfPages, OrderTime, PackQuantity
+	            9. changed dt.NonEmptyString to dt.RomanNumeralString in ExtentValueRoman
+	           10. validation of e-mail addresses via dt.EmailString type
+
+	               note all changes above enforce limitations already expressed clearly in the documentation
+
+	2012-04-20: 1. corrected long-standing error in content model of <CitedContent>: <PositionOnList> is optional
+	            2. enforce 'either <SenderIdentifier> or <SenderName>, or both' in <Sender>
+	            3. enforce 'either <AddresseeIdentifier> or <AddresseeName>, or both' in <Addressee>
+	            4. enforce 'if used, either <TitleText> or <TitlePrefix> with <TitleWithoutPrefix>' in <TitleElement>
+	            5. enforce 'either <CountryCode> or <RegionCode>' in <ContributorPlace>. Note 'both' should probably not be an option, but is allowed (see change of 2009-12-22)
+	            6. enforce 'if used, <EditionVersionNumber> must be preceded by <EditionNumber>'
+	            7. enforce 'either <ExtentValue> or <ExtentValueRoman>, or both' in <Extent>
+	            8. enforce 'either <ImprintIdentifier> or <ImprintName>, or both' in <Imprint>
+	            9. enforce 'either <PublisherIdentifier> or <PublisherName>, or both' in <Publisher>
+	           10. enforce 'either <ProductContactIdentifier> or <ProductContactName>, or both' in <ProductContact> (fixes cardinality limitation inadvertently introduced 2012-01-27)
+	           11. enforce 'either <CountriesIncluded> or <RegionsIncluded>, or both' in <Territory>, and enforce limits on use of <CountriesExcluded> and <RegionsExcluded>
+	           12. enforce 'either <SalesOutletIdentifier> or <SalesOutletName>, or both' in <SalesOutlet>
+	           13. enforce 'either <AgentIdentifier> or <AgentName>, or both' in <PublisherRepresentative>
+	           14. enforce 'either <SupplierIdentifier> or <SupplierName>, or both' in <Supplier>
+	           15. enforce 'either <SupplierIdentifier> or <SupplierName>, or both' in <NewSupplier>
+	           16. enforce 'either <ProfessionalPosition> or <Affiliation>, or both' in <ProfessionalAffiliation>
+	           17. enforce 'either <NumberOfItemsOfThisForm> or <NumberOfCopies>, or both', in <ProductPart>. Note 'both' should probably not be an option, but is allowed
+	           18. enforce 'either <DiscountPercent> or <DiscountAmount>, or both', in <Discount>
+
+	               note changes 2–18 above (and 10 below) enforce limitations expressed clearly in the documentation, but make the schema a little
+	               more complex, and may cause issues when automatically creating object classes from the schema
+
+	2012-01-27: ONIX for Books 3.0 revision 1
+	            1. added collationkey and textscript attributes
+	            2. added <CollectionSequence> composite
+	            3. added <SequenceNumber> within <TitleElement>
+	            4. added <TitleStatement> within <TitleDetail>
+	            5. added <ProductContact> composite
+	            6. modified <ThesisYear> to take dateformat attribute
+	            7. modified <MessageNote> and <AudienceCodeTypeName> to take language attribute
+	            8. modified cardinality of <MessageNote>, <DeletionText>, <ProductFormFeatureDescription>, <ProductFormDescription>, <BiographicalNote>, <ContributorDescription>, <ProfessionalPosition>, <WebsiteDescription>, <ContributorStatement>, <EditionStatement>, <ReligiousTextFeatureDescription>, <IllustrationsNote>, <AncillaryContentDescription>, <SubjectHeadingText>, <AudienceDescription>, <Text>, <FeatureNote>, <CitationNote>, <PrizeJury>, <PublishingStatusNote>, <SalesRestrictionNote>, <MarketPublishingStatusNote>, <PriceTypeDescription>
+	            9. added <ContributorStatement> within <Collection>
+	           10. enforce 'either <Imprint> or <Publisher>, or both' to match documentation
+
+	2011-11-03: corrected cardinality of <ComparisonProductPrice>
+
+	2011-10-21: changed XML namespace to http://ns.editeur.org/onix/3.0/reference
+
+	2011-07-15: 1. simplified DateOrDateTime format, with minor correction in line with documentation
+	            2. corrected data type of EditionNumber to Integer in line with documentation
+
+	2011-05-31: corrected cardinality of <Territory> within <SalesRights> to 1 (from 1…n) to match documentation (reverts change of 2010-05-20)
+
+	2011-05-05: 1. added textformat attribute to <InitialPrintRun> to match documentation
+	            2. added language attribute to <DeletionText> to match documentation
+	            3. removed textformat attribute from <ConferenceName> to match documentation
+
+	2010-11-25: Short tag name for element MarketPublishingStatusNote changed from x408 to x406
+
+	2010-10-29: 1. new ROWSalesRightsType element added
+	            2. cardinality of SupplyDetail and Supplier corrected
+	            3. new CorporateNameInverted element added
+	            4. new dateformat attribute added to date-related elements
+	            5. DateFormat elements made optional, in favour of using new attribute
+	            6. cardinality of NameType element changed within NameAsSubject
+	            7. content model of RelatedProduct changed to include ProductForm and ProductFormDetail
+	            8. cardinality of ProductRelationCode element changed
+	            9. new MarketPublishingStatusNote element added
+	           10. cardinality of MarketDate element changed
+	           11. new PriceCoded composite added, as an alternative to PriceAmount
+	           12. new ComparisonProductPrice composite added
+
+	2010-05-20: 1. Content model of SalesRights corrected to make Territory repeatable
+	            2. Content model of SupplyDate corrected to make DateFormat mandatory
+
+	2009-12-22: 1. Data type 'NonEmptyString' corrected
+	            2. Pattern 'YearOrYearMonth' corrected
+	            3. Content model of ContributorPlace changed to allow both CountryCode and RegionCode
+
+	2009-09-18: Content model of UnnamedPersons corrected
+
+	2009-08-12: 1. Top-level element tag name changed to 'ONIXMessage'
+	            2. Pattern 'CountryCodeList' corrected to allow multiple code values
+	            3. Pattern 'RegionCodeList' corrected to allow multiple code values
+	            4. Pattern 'DateOrDateTime' changed to allow omission of seconds
+
+	2009-07-17: Mandatory 'release' attribute added to top-level element
+
+	2009-05-11: Content model of MarketPublishingDetail corrected
+
+	2009-04-09: Release 3.0 schema for public release
+
+-->
+
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://ns.editeur.org/onix/3.0/reference">
+	<start>
+		<ref name="ONIXMessage"/>
+	</start>
+	<include href="ONIX_BookProduct_CodeLists.rng"/>
+	<include href="ONIX_XHTML_Subset.rng"/>
+	<define name="Addressee">
+		<element name="Addressee">
+			<optional><attribute name="refname"><value>Addressee</value></attribute></optional>
+			<optional><attribute name="shortname"><value>addressee</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<choice>
+					<group>
+						<oneOrMore><ref name="AddresseeIdentifier"/></oneOrMore>
+						<optional><ref name="AddresseeName"/></optional>
+					</group>
+					<ref name="AddresseeName"/>
+				</choice>
+				<optional><ref name="ContactName"/></optional>
+				<optional><ref name="EmailAddress"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="AddresseeIdentifier">
+		<element name="AddresseeIdentifier">
+			<optional><attribute name="refname"><value>AddresseeIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>addresseeidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="AddresseeIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="AddresseeIDType">
+		<element name="AddresseeIDType">
+			<optional><attribute name="refname"><value>AddresseeIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>m380</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List44"/>
+		</element>
+	</define>
+	<define name="AddresseeName">
+		<element name="AddresseeName">
+			<optional><attribute name="refname"><value>AddresseeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x300</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Affiliation">
+		<element name="Affiliation">
+			<optional><attribute name="refname"><value>Affiliation</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b046</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="AgentIdentifier">
+		<element name="AgentIdentifier">
+			<optional><attribute name="refname"><value>AgentIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>agentidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="AgentIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="AgentIDType">
+		<element name="AgentIDType">
+			<optional><attribute name="refname"><value>AgentIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j400</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List92"/>
+		</element>
+	</define>
+	<define name="AgentName">
+		<element name="AgentName">
+			<optional><attribute name="refname"><value>AgentName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j401</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="AgentRole">
+		<element name="AgentRole">
+			<optional><attribute name="refname"><value>AgentRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j402</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List69"/>
+		</element>
+	</define>
+	<define name="AlternativeName">
+		<element name="AlternativeName">
+			<optional><attribute name="refname"><value>AlternativeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>alternativename</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="NameType"/>
+				<choice>
+					<group>
+						<oneOrMore><ref name="NameIdentifier"/></oneOrMore>
+						<optional>
+							<choice>
+								<group>
+									<ref name="gp.unstructured_name"/>
+									<optional><ref name="gp.structured_name"/></optional>
+								</group>
+								<ref name="gp.structured_name"/>
+								<ref name="gp.corporate_name"/>
+							</choice>
+						</optional>
+					</group>
+					<group>
+						<choice>
+							<group>
+								<ref name="gp.unstructured_name"/>
+								<optional><ref name="gp.structured_name"/></optional>
+							</group>
+							<ref name="gp.structured_name"/>
+							<ref name="gp.corporate_name"/>
+						</choice>
+					</group>
+				</choice>
+			</group>
+		</element>
+	</define>
+	<define name="AncillaryContent">
+		<element name="AncillaryContent">
+			<optional><attribute name="refname"><value>AncillaryContent</value></attribute></optional>
+			<optional><attribute name="shortname"><value>ancillarycontent</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="AncillaryContentType"/>
+				<zeroOrMore><ref name="AncillaryContentDescription"/></zeroOrMore>
+				<optional><ref name="Number"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="AncillaryContentType">
+		<element name="AncillaryContentType">
+			<optional><attribute name="refname"><value>AncillaryContentType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x423</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List25"/>
+		</element>
+	</define>
+	<define name="AncillaryContentDescription">
+		<element name="AncillaryContentDescription">
+			<optional><attribute name="refname"><value>AncillaryContentDescription</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x424</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="Audience">
+		<element name="Audience">
+			<optional><attribute name="refname"><value>Audience</value></attribute></optional>
+			<optional><attribute name="shortname"><value>audience</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="AudienceCodeType"/>
+				<optional><ref name="AudienceCodeTypeName"/></optional>
+				<ref name="AudienceCodeValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="AudienceCode">
+		<element name="AudienceCode">
+			<optional><attribute name="refname"><value>AudienceCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b073</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List28"/>
+		</element>
+	</define>
+	<define name="AudienceCodeType">
+		<element name="AudienceCodeType">
+			<optional><attribute name="refname"><value>AudienceCodeType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b204</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List29"/>
+		</element>
+	</define>
+	<define name="AudienceCodeTypeName">
+		<element name="AudienceCodeTypeName">
+			<optional><attribute name="refname"><value>AudienceCodeTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b205</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="AudienceCodeValue">
+		<element name="AudienceCodeValue">
+			<optional><attribute name="refname"><value>AudienceCodeValue</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b206</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="AudienceDescription">
+		<element name="AudienceDescription">
+			<optional><attribute name="refname"><value>AudienceDescription</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b207</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="AudienceRange">
+		<element name="AudienceRange">
+			<optional><attribute name="refname"><value>AudienceRange</value></attribute></optional>
+			<optional><attribute name="shortname"><value>audiencerange</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="AudienceRangeQualifier"/>
+				<ref name="AudienceRangePrecision"/>
+				<ref name="AudienceRangeValue"/>
+				<optional>
+					<group>
+						<ref name="AudienceRangePrecision"/>
+						<ref name="AudienceRangeValue"/>
+					</group>
+				</optional>
+			</group>
+		</element>
+	</define>
+	<define name="AudienceRangePrecision">
+		<element name="AudienceRangePrecision">
+			<optional><attribute name="refname"><value>AudienceRangePrecision</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b075</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List31"/>
+		</element>
+	</define>
+	<define name="AudienceRangeQualifier">
+		<element name="AudienceRangeQualifier">
+			<optional><attribute name="refname"><value>AudienceRangeQualifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b074</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List30"/>
+		</element>
+	</define>
+	<define name="AudienceRangeValue">
+		<element name="AudienceRangeValue">
+			<optional><attribute name="refname"><value>AudienceRangeValue</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b076</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Barcode">
+		<element name="Barcode">
+			<optional><attribute name="refname"><value>Barcode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>barcode</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="BarcodeType"/>
+				<optional><ref name="PositionOnProduct"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="BarcodeType">
+		<element name="BarcodeType">
+			<optional><attribute name="refname"><value>BarcodeType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x312</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List141"/>
+		</element>
+	</define>
+	<define name="BatchBonus">
+		<element name="BatchBonus">
+			<optional><attribute name="refname"><value>BatchBonus</value></attribute></optional>
+			<optional><attribute name="shortname"><value>batchbonus</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="BatchQuantity"/>
+				<ref name="FreeQuantity"/>
+			</group>
+		</element>
+	</define>
+	<define name="BatchQuantity">
+		<element name="BatchQuantity">
+			<optional><attribute name="refname"><value>BatchQuantity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j264</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="Bible">
+		<element name="Bible">
+			<optional><attribute name="refname"><value>Bible</value></attribute></optional>
+			<optional><attribute name="shortname"><value>bible</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<oneOrMore><ref name="BibleContents"/></oneOrMore>
+				<oneOrMore><ref name="BibleVersion"/></oneOrMore>
+				<optional><ref name="StudyBibleType"/></optional>
+				<zeroOrMore><ref name="BiblePurpose"/></zeroOrMore>
+				<optional><ref name="BibleTextOrganization"/></optional>
+				<optional><ref name="BibleReferenceLocation"/></optional>
+				<zeroOrMore><ref name="BibleTextFeature"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="BibleContents">
+		<element name="BibleContents">
+			<optional><attribute name="refname"><value>BibleContents</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b352</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List82"/>
+		</element>
+	</define>
+	<define name="BiblePurpose">
+		<element name="BiblePurpose">
+			<optional><attribute name="refname"><value>BiblePurpose</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b354</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List85"/>
+		</element>
+	</define>
+	<define name="BibleReferenceLocation">
+		<element name="BibleReferenceLocation">
+			<optional><attribute name="refname"><value>BibleReferenceLocation</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b356</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List87"/>
+		</element>
+	</define>
+	<define name="BibleTextFeature">
+		<element name="BibleTextFeature">
+			<optional><attribute name="refname"><value>BibleTextFeature</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b357</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List97"/>
+		</element>
+	</define>
+	<define name="BibleTextOrganization">
+		<element name="BibleTextOrganization">
+			<optional><attribute name="refname"><value>BibleTextOrganization</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b355</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List86"/>
+		</element>
+	</define>
+	<define name="BibleVersion">
+		<element name="BibleVersion">
+			<optional><attribute name="refname"><value>BibleVersion</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b353</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List83"/>
+		</element>
+	</define>
+	<define name="BiographicalNote">
+		<element name="BiographicalNote">
+			<optional><attribute name="refname"><value>BiographicalNote</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b044</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="BookClubAdoption">
+		<element name="BookClubAdoption">
+			<optional><attribute name="refname"><value>BookClubAdoption</value></attribute></optional>
+			<optional><attribute name="shortname"><value>k169</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="CBO">
+		<element name="CBO">
+			<optional><attribute name="refname"><value>CBO</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j375</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PositiveInteger"/>
+		</element>
+	</define>
+	<define name="CitationNote">
+		<element name="CitationNote">
+			<optional><attribute name="refname"><value>CitationNote</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x434</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="CitedContent">
+		<element name="CitedContent">
+			<optional><attribute name="refname"><value>CitedContent</value></attribute></optional>
+			<optional><attribute name="shortname"><value>citedcontent</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="CitedContentType"/>
+				<zeroOrMore><ref name="ContentAudience"/></zeroOrMore>
+				<optional><ref name="SourceType"/></optional>
+				<choice>
+					<group>
+						<oneOrMore><ref name="SourceTitle"/></oneOrMore>
+						<zeroOrMore><ref name="ListName"/></zeroOrMore>
+						<optional><ref name="PositionOnList"/></optional>
+					</group>
+					<group>
+						<oneOrMore><ref name="ListName"/></oneOrMore>
+						<optional><ref name="PositionOnList"/></optional>
+					</group>
+				</choice>
+				<zeroOrMore><ref name="CitationNote"/></zeroOrMore>
+				<zeroOrMore><ref name="ResourceLink"/></zeroOrMore>
+				<zeroOrMore><ref name="ContentDate"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="CitedContentType">
+		<element name="CitedContentType">
+			<optional><attribute name="refname"><value>CitedContentType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x430</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List156"/>
+		</element>
+	</define>
+	<define name="CityOfPublication">
+		<element name="CityOfPublication">
+			<optional><attribute name="refname"><value>CityOfPublication</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b209</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="CollateralDetail">
+		<element name="CollateralDetail">
+			<optional><attribute name="refname"><value>CollateralDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>collateraldetail</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="gp.descriptions"/>
+				<ref name="gp.prizes"/>
+			</group>
+		</element>
+	</define>
+	<define name="Collection">
+		<element name="Collection">
+			<optional><attribute name="refname"><value>Collection</value></attribute></optional>
+			<optional><attribute name="shortname"><value>collection</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="CollectionType"/>
+				<optional><ref name="SourceName"/></optional>
+				<zeroOrMore><ref name="CollectionIdentifier"/></zeroOrMore>
+				<zeroOrMore><ref name="CollectionSequence"/></zeroOrMore>
+				<zeroOrMore><ref name="TitleDetail"/></zeroOrMore>
+				<optional>
+					<group>
+						<oneOrMore><ref name="Contributor"/></oneOrMore>
+						<zeroOrMore><ref name="ContributorStatement"/></zeroOrMore>
+					</group>
+				</optional>
+			</group>
+		</element>
+	</define>
+	<define name="CollectionIdentifier">
+		<element name="CollectionIdentifier">
+			<optional><attribute name="refname"><value>CollectionIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>collectionidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="CollectionIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="CollectionIDType">
+		<element name="CollectionIDType">
+			<optional><attribute name="refname"><value>CollectionIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x344</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List13"/>
+		</element>
+	</define>
+	<define name="CollectionSequence">
+		<element name="CollectionSequence">
+			<optional><attribute name="refname"><value>CollectionSequence</value></attribute></optional>
+			<optional><attribute name="shortname"><value>collectionsequence</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="CollectionSequenceType"/>
+				<optional><ref name="CollectionSequenceTypeName"/></optional>
+				<ref name="CollectionSequenceNumber"/>
+			</group>
+		</element>
+	</define>
+	<define name="CollectionSequenceNumber">
+		<element name="CollectionSequenceNumber">
+			<optional><attribute name="refname"><value>CollectionSequenceNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x481</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.MultiLevelNumber"/>
+		</element>
+	</define>
+	<define name="CollectionSequenceType">
+		<element name="CollectionSequenceType">
+			<optional><attribute name="refname"><value>CollectionSequenceType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x479</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List197"/>
+		</element>
+	</define>
+	<define name="CollectionSequenceTypeName">
+		<element name="CollectionSequenceTypeName">
+			<optional><attribute name="refname"><value>CollectionSequenceTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x480</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="CollectionType">
+		<element name="CollectionType">
+			<optional><attribute name="refname"><value>CollectionType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x329</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List148"/>
+		</element>
+	</define>
+	<define name="ComparisonProductPrice">
+		<element name="ComparisonProductPrice">
+			<optional><attribute name="refname"><value>ComparisonProductPrice</value></attribute></optional>
+			<optional><attribute name="shortname"><value>comparisonproductprice</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<oneOrMore><ref name="ProductIdentifier"/></oneOrMore>
+				<optional><ref name="PriceType"/></optional>
+				<ref name="PriceAmount"/>
+				<optional><ref name="CurrencyCode"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="Complexity">
+		<element name="Complexity">
+			<optional><attribute name="refname"><value>Complexity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>complexity</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ComplexitySchemeIdentifier"/>
+				<ref name="ComplexityCode"/>
+			</group>
+		</element>
+	</define>
+	<define name="ComplexityCode">
+		<element name="ComplexityCode">
+			<optional><attribute name="refname"><value>ComplexityCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b078</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ComplexitySchemeIdentifier">
+		<element name="ComplexitySchemeIdentifier">
+			<optional><attribute name="refname"><value>ComplexitySchemeIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b077</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List32"/>
+		</element>
+	</define>
+	<define name="ComponentNumber">
+		<element name="ComponentNumber">
+			<optional><attribute name="refname"><value>ComponentNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b289</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ComponentTypeName">
+		<element name="ComponentTypeName">
+			<optional><attribute name="refname"><value>ComponentTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b288</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Conference">
+		<element name="Conference">
+			<optional><attribute name="refname"><value>Conference</value></attribute></optional>
+			<optional><attribute name="shortname"><value>conference</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="ConferenceRole"/></optional>
+				<ref name="ConferenceName"/>
+				<optional><ref name="ConferenceAcronym"/></optional>
+				<optional><ref name="ConferenceNumber"/></optional>
+				<optional><ref name="ConferenceTheme"/></optional>
+				<optional><ref name="ConferenceDate"/></optional>
+				<optional><ref name="ConferencePlace"/></optional>
+				<zeroOrMore><ref name="ConferenceSponsor"/></zeroOrMore>
+				<zeroOrMore><ref name="Website"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ConferenceAcronym">
+		<element name="ConferenceAcronym">
+			<optional><attribute name="refname"><value>ConferenceAcronym</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b341</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ConferenceDate">
+		<element name="ConferenceDate">
+			<optional><attribute name="refname"><value>ConferenceDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b054</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dateformatAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ConferenceName">
+		<element name="ConferenceName">
+			<optional><attribute name="refname"><value>ConferenceName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b052</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ConferenceNumber">
+		<element name="ConferenceNumber">
+			<optional><attribute name="refname"><value>ConferenceNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b053</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="ConferencePlace">
+		<element name="ConferencePlace">
+			<optional><attribute name="refname"><value>ConferencePlace</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b055</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ConferenceRole">
+		<element name="ConferenceRole">
+			<optional><attribute name="refname"><value>ConferenceRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b051</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List20"/>
+		</element>
+	</define>
+	<define name="ConferenceSponsor">
+		<element name="ConferenceSponsor">
+			<optional><attribute name="refname"><value>ConferenceSponsor</value></attribute></optional>
+			<optional><attribute name="shortname"><value>conferencesponsor</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<choice>
+				<group>
+					<ref name="ConferenceSponsorIdentifier"/>
+					<optional>
+						<choice>
+							<ref name="PersonName"/>
+							<ref name="CorporateName"/>
+						</choice>
+					</optional>
+				</group>
+				<ref name="PersonName"/>
+				<ref name="CorporateName"/>
+			</choice>
+		</element>
+	</define>
+	<define name="ConferenceSponsorIDType">
+		<element name="ConferenceSponsorIDType">
+			<optional><attribute name="refname"><value>ConferenceSponsorIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b391</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List44"/>
+		</element>
+	</define>
+	<define name="ConferenceSponsorIdentifier">
+		<element name="ConferenceSponsorIdentifier">
+			<optional><attribute name="refname"><value>ConferenceSponsorIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>conferencesponsoridentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ConferenceSponsorIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="ConferenceTheme">
+		<element name="ConferenceTheme">
+			<optional><attribute name="refname"><value>ConferenceTheme</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b342</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="ContactName">
+		<element name="ContactName">
+			<optional><attribute name="refname"><value>ContactName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x299</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ContentAudience">
+		<element name="ContentAudience">
+			<optional><attribute name="refname"><value>ContentAudience</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x427</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List154"/>
+		</element>
+	</define>
+	<define name="ContentDate">
+		<element name="ContentDate">
+			<optional><attribute name="refname"><value>ContentDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>contentdate</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ContentDateRole"/>
+				<optional><ref name="DateFormat"/></optional>
+				<ref name="Date"/>
+			</group>
+		</element>
+	</define>
+	<define name="ContentDateRole">
+		<element name="ContentDateRole">
+			<optional><attribute name="refname"><value>ContentDateRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x429</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List155"/>
+		</element>
+	</define>
+	<define name="ContentDetail">
+		<element name="ContentDetail">
+			<optional><attribute name="refname"><value>ContentDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>contentdetail</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<oneOrMore><ref name="ContentItem"/></oneOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ContentItem">
+		<element name="ContentItem">
+			<optional><attribute name="refname"><value>ContentItem</value></attribute></optional>
+			<optional><attribute name="shortname"><value>contentitem</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="LevelSequenceNumber"/></optional>
+				<ref name="TextItem"/>
+				<choice>
+					<group>
+						<ref name="ComponentTypeName"/>
+						<optional><ref name="ComponentNumber"/></optional>
+						<zeroOrMore><ref name="TitleDetail"/></zeroOrMore>
+					</group>
+					<group>
+						<optional><ref name="ComponentNumber"/></optional>
+						<oneOrMore><ref name="TitleDetail"/></oneOrMore>
+					</group>
+				</choice>
+				<zeroOrMore><ref name="Contributor"/></zeroOrMore>
+				<zeroOrMore><ref name="Subject"/></zeroOrMore>
+				<zeroOrMore><ref name="NameAsSubject"/></zeroOrMore>
+				<zeroOrMore><ref name="TextContent"/></zeroOrMore>
+				<zeroOrMore><ref name="CitedContent"/></zeroOrMore>
+				<zeroOrMore><ref name="SupportingResource"/></zeroOrMore>
+				<zeroOrMore><ref name="RelatedWork"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="Contributor">
+		<element name="Contributor">
+			<optional><attribute name="refname"><value>Contributor</value></attribute></optional>
+			<optional><attribute name="shortname"><value>contributor</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="SequenceNumber"/></optional>
+				<oneOrMore><ref name="ContributorRole"/></oneOrMore>
+				<zeroOrMore><ref name="FromLanguage"/></zeroOrMore>
+				<zeroOrMore><ref name="ToLanguage"/></zeroOrMore>
+				<optional><ref name="NameType"/></optional>
+				<choice>
+					<group>
+						<choice>
+							<group>
+								<oneOrMore><ref name="NameIdentifier"/></oneOrMore>
+								<optional>
+									<choice>
+										<group>
+											<ref name="gp.unstructured_name"/>
+											<optional><ref name="gp.structured_name"/></optional>
+										</group>
+										<ref name="gp.structured_name"/>
+										<ref name="gp.corporate_name"/>
+									</choice>
+								</optional>
+							</group>
+							<group>
+								<choice>
+									<group>
+										<ref name="gp.unstructured_name"/>
+										<optional><ref name="gp.structured_name"/></optional>
+									</group>
+									<ref name="gp.structured_name"/>
+									<ref name="gp.corporate_name"/>
+								</choice>
+							</group>
+						</choice>
+						<zeroOrMore><ref name="AlternativeName"/></zeroOrMore>
+						<zeroOrMore><ref name="ContributorDate"/></zeroOrMore>
+						<zeroOrMore><ref name="ProfessionalAffiliation"/></zeroOrMore>
+						<zeroOrMore><ref name="BiographicalNote"/></zeroOrMore>
+						<zeroOrMore><ref name="Website"/></zeroOrMore>
+						<zeroOrMore><ref name="ContributorDescription"/></zeroOrMore>
+					</group>
+					<group>
+						<zeroOrMore><ref name="ContributorDate"/></zeroOrMore>
+						<zeroOrMore><ref name="ProfessionalAffiliation"/></zeroOrMore>
+						<zeroOrMore><ref name="BiographicalNote"/></zeroOrMore>
+						<zeroOrMore><ref name="Website"/></zeroOrMore>
+						<zeroOrMore><ref name="ContributorDescription"/></zeroOrMore>
+						<ref name="UnnamedPersons"/>
+					</group>
+				</choice>
+				<zeroOrMore><ref name="ContributorPlace"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ContributorDate">
+		<element name="ContributorDate">
+			<optional><attribute name="refname"><value>ContributorDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>contributordate</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ContributorDateRole"/>
+				<optional><ref name="DateFormat"/></optional>
+				<ref name="Date"/>
+			</group>
+		</element>
+	</define>
+	<define name="ContributorDateRole">
+		<element name="ContributorDateRole">
+			<optional><attribute name="refname"><value>ContributorDateRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x417</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List177"/>
+		</element>
+	</define>
+	<define name="ContributorDescription">
+		<element name="ContributorDescription">
+			<optional><attribute name="refname"><value>ContributorDescription</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b048</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="ContributorPlace">
+		<element name="ContributorPlace">
+			<optional><attribute name="refname"><value>ContributorPlace</value></attribute></optional>
+			<optional><attribute name="shortname"><value>contributorplace</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ContributorPlaceRelator"/>
+				<choice>
+					<group>
+						<ref name="CountryCode"/>
+						<optional><ref name="RegionCode"/></optional>
+					</group>
+					<ref name="RegionCode"/>
+				</choice>
+				<zeroOrMore><ref name="LocationName"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ContributorPlaceRelator">
+		<element name="ContributorPlaceRelator">
+			<optional><attribute name="refname"><value>ContributorPlaceRelator</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x418</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List151"/>
+		</element>
+	</define>
+	<define name="ContributorRole">
+		<element name="ContributorRole">
+			<optional><attribute name="refname"><value>ContributorRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b035</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List17"/>
+		</element>
+	</define>
+	<define name="ContributorStatement">
+		<element name="ContributorStatement">
+			<optional><attribute name="refname"><value>ContributorStatement</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b049</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="CopiesSold">
+		<element name="CopiesSold">
+			<optional><attribute name="refname"><value>CopiesSold</value></attribute></optional>
+			<optional><attribute name="shortname"><value>k168</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="CopyrightOwner">
+		<element name="CopyrightOwner">
+			<optional><attribute name="refname"><value>CopyrightOwner</value></attribute></optional>
+			<optional><attribute name="shortname"><value>copyrightowner</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<choice>
+				<group>
+					<oneOrMore><ref name="CopyrightOwnerIdentifier"/></oneOrMore>
+					<optional>
+						<choice>
+							<ref name="PersonName"/>
+							<ref name="CorporateName"/>
+						</choice>
+					</optional>
+				</group>
+				<ref name="PersonName"/>
+				<ref name="CorporateName"/>
+			</choice>
+		</element>
+	</define>
+	<define name="CopyrightOwnerIDType">
+		<element name="CopyrightOwnerIDType">
+			<optional><attribute name="refname"><value>CopyrightOwnerIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b392</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List44"/>
+		</element>
+	</define>
+	<define name="CopyrightOwnerIdentifier">
+		<element name="CopyrightOwnerIdentifier">
+			<optional><attribute name="refname"><value>CopyrightOwnerIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>copyrightowneridentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="CopyrightOwnerIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="CopyrightStatement">
+		<element name="CopyrightStatement">
+			<optional><attribute name="refname"><value>CopyrightStatement</value></attribute></optional>
+			<optional><attribute name="shortname"><value>copyrightstatement</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="CopyrightType"/></optional>
+				<oneOrMore><ref name="CopyrightYear"/></oneOrMore>
+				<zeroOrMore><ref name="CopyrightOwner"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="CopyrightType">
+		<element name="CopyrightType">
+			<optional><attribute name="refname"><value>CopyrightType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x512</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List219"/>
+		</element>
+	</define>
+	<define name="CopyrightYear">
+		<element name="CopyrightYear">
+			<optional><attribute name="refname"><value>CopyrightYear</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b087</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dateformatAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="CorporateName">
+		<element name="CorporateName">
+			<optional><attribute name="refname"><value>CorporateName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b047</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="CorporateNameInverted">
+		<element name="CorporateNameInverted">
+			<optional><attribute name="refname"><value>CorporateNameInverted</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x443</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="CountriesIncluded">
+		<element name="CountriesIncluded">
+			<optional><attribute name="refname"><value>CountriesIncluded</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x449</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="CountryCodeList"/>
+		</element>
+	</define>
+	<define name="CountriesExcluded">
+		<element name="CountriesExcluded">
+			<optional><attribute name="refname"><value>CountriesExcluded</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x451</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="CountryCodeList"/>
+		</element>
+	</define>
+	<define name="CountryCode">
+		<element name="CountryCode">
+			<optional><attribute name="refname"><value>CountryCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b251</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List91"/>
+		</element>
+	</define>
+	<define name="CountryCodeList">
+		<list>
+			<oneOrMore><ref name="List91"/></oneOrMore>
+		</list>
+	</define>
+	<define name="CountryOfManufacture">
+		<element name="CountryOfManufacture">
+			<optional><attribute name="refname"><value>CountryOfManufacture</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x316</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List91"/>
+		</element>
+	</define>
+	<define name="CountryOfPublication">
+		<element name="CountryOfPublication">
+			<optional><attribute name="refname"><value>CountryOfPublication</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b083</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List91"/>
+		</element>
+	</define>
+	<define name="CurrencyCode">
+		<element name="CurrencyCode">
+			<optional><attribute name="refname"><value>CurrencyCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j152</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List96"/>
+		</element>
+	</define>
+	<define name="CurrencyZone">
+		<element name="CurrencyZone">
+			<optional><attribute name="refname"><value>CurrencyZone</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x475</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List172"/>
+		</element>
+	</define>
+	<define name="Date">
+		<element name="Date">
+			<optional><attribute name="refname"><value>Date</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b306</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dateformatAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="DateFormat">
+		<element name="DateFormat">
+			<optional><attribute name="refname"><value>DateFormat</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j260</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List55"/>
+		</element>
+	</define>
+	<define name="DefaultCurrencyCode">
+		<element name="DefaultCurrencyCode">
+			<optional><attribute name="refname"><value>DefaultCurrencyCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>m186</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List96"/>
+		</element>
+	</define>
+	<define name="DefaultLanguageOfText">
+		<element name="DefaultLanguageOfText">
+			<optional><attribute name="refname"><value>DefaultLanguageOfText</value></attribute></optional>
+			<optional><attribute name="shortname"><value>m184</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List74"/>
+		</element>
+	</define>
+	<define name="DefaultPriceType">
+		<element name="DefaultPriceType">
+			<optional><attribute name="refname"><value>DefaultPriceType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x310</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List58"/>
+		</element>
+	</define>
+	<define name="DeletionText">
+		<element name="DeletionText">
+			<optional><attribute name="refname"><value>DeletionText</value></attribute></optional>
+			<optional><attribute name="shortname"><value>a199</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="DescriptiveDetail">
+		<element name="DescriptiveDetail">
+			<optional><attribute name="refname"><value>DescriptiveDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>descriptivedetail</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="gp.product_form"/>
+				<ref name="gp.collections"/>
+				<ref name="gp.title"/>
+				<ref name="gp.authorship"/>
+				<ref name="gp.conference"/>
+				<ref name="gp.edition"/>
+				<ref name="gp.language"/>
+				<ref name="gp.extents"/>
+				<ref name="gp.subject"/>
+				<ref name="gp.audience"/>
+			</group>
+		</element>
+	</define>
+	<define name="Discount">
+		<element name="Discount">
+			<optional><attribute name="refname"><value>Discount</value></attribute></optional>
+			<optional><attribute name="shortname"><value>discount</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="DiscountType"/></optional>
+				<optional>
+					<ref name="Quantity"/>
+					<optional><ref name="ToQuantity"/></optional>
+				</optional>
+				<choice>
+					<group>
+						<ref name="DiscountPercent"/>
+						<optional><ref name="DiscountAmount"/></optional>
+					</group>
+					<ref name="DiscountAmount"/>
+				</choice>
+			</group>
+		</element>
+	</define>
+	<define name="DiscountAmount">
+		<element name="DiscountAmount">
+			<optional><attribute name="refname"><value>DiscountAmount</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x469</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PositiveDecimal"/>
+		</element>
+	</define>
+	<define name="DiscountCode">
+		<element name="DiscountCode">
+			<optional><attribute name="refname"><value>DiscountCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j364</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="DiscountCodeType">
+		<element name="DiscountCodeType">
+			<optional><attribute name="refname"><value>DiscountCodeType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j363</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List100"/>
+		</element>
+	</define>
+	<define name="DiscountCodeTypeName">
+		<element name="DiscountCodeTypeName">
+			<optional><attribute name="refname"><value>DiscountCodeTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j378</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="DiscountCoded">
+		<element name="DiscountCoded">
+			<optional><attribute name="refname"><value>DiscountCoded</value></attribute></optional>
+			<optional><attribute name="shortname"><value>discountcoded</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="DiscountCodeType"/>
+				<optional><ref name="DiscountCodeTypeName"/></optional>
+				<ref name="DiscountCode"/>
+			</group>
+		</element>
+	</define>
+	<define name="DiscountType">
+		<element name="DiscountType">
+			<optional><attribute name="refname"><value>DiscountType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x467</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List170"/>
+		</element>
+	</define>
+	<define name="EpubTechnicalProtection">
+		<element name="EpubTechnicalProtection">
+			<optional><attribute name="refname"><value>EpubTechnicalProtection</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x317</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List144"/>
+		</element>
+	</define>
+	<define name="EditionNumber">
+		<element name="EditionNumber">
+			<optional><attribute name="refname"><value>EditionNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b057</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="EditionStatement">
+		<element name="EditionStatement">
+			<optional><attribute name="refname"><value>EditionStatement</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b058</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="EditionType">
+		<element name="EditionType">
+			<optional><attribute name="refname"><value>EditionType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x419</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List21"/>
+		</element>
+	</define>
+	<define name="EditionVersionNumber">
+		<element name="EditionVersionNumber">
+			<optional><attribute name="refname"><value>EditionVersionNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b217</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="EmailAddress">
+		<element name="EmailAddress">
+			<optional><attribute name="refname"><value>EmailAddress</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j272</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.EmailString"/>
+		</element>
+	</define>
+	<define name="EndDate">
+		<element name="EndDate">
+			<optional><attribute name="refname"><value>EndDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b325</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dateformatAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="EpubLicense">
+		<element name="EpubLicense">
+			<optional><attribute name="refname"><value>EpubLicense</value></attribute></optional>
+			<optional><attribute name="shortname"><value>epublicense</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<oneOrMore><ref name="EpubLicenseName"/></oneOrMore>
+				<zeroOrMore><ref name="EpubLicenseExpression"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="EpubLicenseExpression">
+		<element name="EpubLicenseExpression">
+			<optional><attribute name="refname"><value>EpubLicenseExpression</value></attribute></optional>
+			<optional><attribute name="shortname"><value>epublicenseexpression</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="EpubLicenseExpressionType"/>
+				<optional><ref name="EpubLicenseExpressionTypeName"/></optional>
+				<ref name="EpubLicenseExpressionLink"/>
+			</group>
+		</element>
+	</define>
+	<define name="EpubLicenseExpressionLink">
+		<element name="EpubLicenseExpressionLink">
+			<optional><attribute name="refname"><value>EpubLicenseExpressionLink</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x510</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyURI"/>
+		</element>
+	</define>
+	<define name="EpubLicenseExpressionType">
+		<element name="EpubLicenseExpressionType">
+			<optional><attribute name="refname"><value>EpubLicenseExpressionType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x508</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List218"/>
+		</element>
+	</define>
+	<define name="EpubLicenseExpressionTypeName">
+		<element name="EpubLicenseExpressionTypeName">
+			<optional><attribute name="refname"><value>EpubLicenseExpressionTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x509</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="EpubLicenseName">
+		<element name="EpubLicenseName">
+			<optional><attribute name="refname"><value>EpubLicenseName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x511</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="EpubUsageConstraint">
+		<element name="EpubUsageConstraint">
+			<optional><attribute name="refname"><value>EpubUsageConstraint</value></attribute></optional>
+			<optional><attribute name="shortname"><value>epubusageconstraint</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="EpubUsageType"/>
+				<ref name="EpubUsageStatus"/>
+				<zeroOrMore><ref name="EpubUsageLimit"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="EpubUsageLimit">
+		<element name="EpubUsageLimit">
+			<optional><attribute name="refname"><value>EpubUsageLimit</value></attribute></optional>
+			<optional><attribute name="shortname"><value>epubusagelimit</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="Quantity"/>
+				<ref name="EpubUsageUnit"/>
+			</group>
+		</element>
+	</define>
+	<define name="EpubUsageStatus">
+		<element name="EpubUsageStatus">
+			<optional><attribute name="refname"><value>EpubUsageStatus</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x319</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List146"/>
+		</element>
+	</define>
+	<define name="EpubUsageType">
+		<element name="EpubUsageType">
+			<optional><attribute name="refname"><value>EpubUsageType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x318</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List145"/>
+		</element>
+	</define>
+	<define name="EpubUsageUnit">
+		<element name="EpubUsageUnit">
+			<optional><attribute name="refname"><value>EpubUsageUnit</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x321</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List147"/>
+		</element>
+	</define>
+	<define name="ExpectedDate">
+		<element name="ExpectedDate">
+			<optional><attribute name="refname"><value>ExpectedDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j302</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dateformatAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Extent">
+		<element name="Extent">
+			<optional><attribute name="refname"><value>Extent</value></attribute></optional>
+			<optional><attribute name="shortname"><value>extent</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ExtentType"/>
+				<choice>
+					<group>
+						<ref name="ExtentValue"/>
+						<optional><ref name="ExtentValueRoman"/></optional>
+					</group>
+					<ref name="ExtentValueRoman"/>
+				</choice>
+				<ref name="ExtentUnit"/>
+			</group>
+		</element>
+	</define>
+	<define name="ExtentType">
+		<element name="ExtentType">
+			<optional><attribute name="refname"><value>ExtentType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b218</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List23"/>
+		</element>
+	</define>
+	<define name="ExtentUnit">
+		<element name="ExtentUnit">
+			<optional><attribute name="refname"><value>ExtentUnit</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b220</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List24"/>
+		</element>
+	</define>
+	<define name="ExtentValue">
+		<element name="ExtentValue">
+			<optional><attribute name="refname"><value>ExtentValue</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b219</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveDecimal"/>
+		</element>
+	</define>
+	<define name="ExtentValueRoman">
+		<element name="ExtentValueRoman">
+			<optional><attribute name="refname"><value>ExtentValueRoman</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x421</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.RomanNumeralString"/>
+		</element>
+	</define>
+	<define name="FaxNumber">
+		<element name="FaxNumber">
+			<optional><attribute name="refname"><value>FaxNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j271</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="FeatureNote">
+		<element name="FeatureNote">
+			<optional><attribute name="refname"><value>FeatureNote</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x440</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="FeatureValue">
+		<element name="FeatureValue">
+			<optional><attribute name="refname"><value>FeatureValue</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x439</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="FirstPageNumber">
+		<element name="FirstPageNumber">
+			<optional><attribute name="refname"><value>FirstPageNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b286</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="FreeQuantity">
+		<element name="FreeQuantity">
+			<optional><attribute name="refname"><value>FreeQuantity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j265</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="FromLanguage">
+		<element name="FromLanguage">
+			<optional><attribute name="refname"><value>FromLanguage</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x412</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List74"/>
+		</element>
+	</define>
+	<define name="Header">
+		<element name="Header">
+			<optional><attribute name="refname"><value>Header</value></attribute></optional>
+			<optional><attribute name="shortname"><value>header</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="Sender"/>
+				<zeroOrMore><ref name="Addressee"/></zeroOrMore>
+				<optional><ref name="MessageNumber"/></optional>
+				<optional><ref name="MessageRepeat"/></optional>
+				<ref name="SentDateTime"/>
+				<zeroOrMore><ref name="MessageNote"/></zeroOrMore>
+				<optional><ref name="DefaultLanguageOfText"/></optional>
+				<optional><ref name="DefaultPriceType"/></optional>
+				<optional><ref name="DefaultCurrencyCode"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="IDTypeName">
+		<element name="IDTypeName">
+			<optional><attribute name="refname"><value>IDTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b233</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="IDValue">
+		<element name="IDValue">
+			<optional><attribute name="refname"><value>IDValue</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b244</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Illustrated">
+		<element name="Illustrated">
+			<optional><attribute name="refname"><value>Illustrated</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x422</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List152"/>
+		</element>
+	</define>
+	<define name="IllustrationsNote">
+		<element name="IllustrationsNote">
+			<optional><attribute name="refname"><value>IllustrationsNote</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b062</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="Imprint">
+		<element name="Imprint">
+			<optional><attribute name="refname"><value>Imprint</value></attribute></optional>
+			<optional><attribute name="shortname"><value>imprint</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<choice>
+					<group>
+						<oneOrMore><ref name="ImprintIdentifier"/></oneOrMore>
+						<optional><ref name="ImprintName"/></optional>
+					</group>
+					<ref name="ImprintName"/>
+				</choice>
+			</group>
+		</element>
+	</define>
+	<define name="ImprintIdentifier">
+		<element name="ImprintIdentifier">
+			<optional><attribute name="refname"><value>ImprintIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>imprintidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ImprintIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="ImprintIDType">
+		<element name="ImprintIDType">
+			<optional><attribute name="refname"><value>ImprintIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x445</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List44"/>
+		</element>
+	</define>
+	<define name="ImprintName">
+		<element name="ImprintName">
+			<optional><attribute name="refname"><value>ImprintName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b079</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="InitialPrintRun">
+		<element name="InitialPrintRun">
+			<optional><attribute name="refname"><value>InitialPrintRun</value></attribute></optional>
+			<optional><attribute name="shortname"><value>k167</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="KeyNames">
+		<element name="KeyNames">
+			<optional><attribute name="refname"><value>KeyNames</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b040</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Language">
+		<element name="Language">
+			<optional><attribute name="refname"><value>Language</value></attribute></optional>
+			<optional><attribute name="shortname"><value>language</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="LanguageRole"/>
+				<ref name="LanguageCode"/>
+				<optional><ref name="CountryCode"/></optional>
+				<optional><ref name="ScriptCode"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="LanguageCode">
+		<element name="LanguageCode">
+			<optional><attribute name="refname"><value>LanguageCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b252</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List74"/>
+		</element>
+	</define>
+	<define name="LanguageRole">
+		<element name="LanguageRole">
+			<optional><attribute name="refname"><value>LanguageRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b253</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List22"/>
+		</element>
+	</define>
+	<define name="LastPageNumber">
+		<element name="LastPageNumber">
+			<optional><attribute name="refname"><value>LastPageNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b287</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="LatestReprintNumber">
+		<element name="LatestReprintNumber">
+			<optional><attribute name="refname"><value>LatestReprintNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x446</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="LettersAfterNames">
+		<element name="LettersAfterNames">
+			<optional><attribute name="refname"><value>LettersAfterNames</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b042</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="LevelSequenceNumber">
+		<element name="LevelSequenceNumber">
+			<optional><attribute name="refname"><value>LevelSequenceNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b284</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.MultiLevelNumber"/>
+		</element>
+	</define>
+	<define name="ListName">
+		<element name="ListName">
+			<optional><attribute name="refname"><value>ListName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x432</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="LocationIdentifier">
+		<element name="LocationIdentifier">
+			<optional><attribute name="refname"><value>LocationIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>locationidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="LocationIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="LocationIDType">
+		<element name="LocationIDType">
+			<optional><attribute name="refname"><value>LocationIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j377</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List92"/>
+		</element>
+	</define>
+	<define name="LocationName">
+		<element name="LocationName">
+			<optional><attribute name="refname"><value>LocationName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j349</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="MainSubject">
+		<element name="MainSubject">
+			<optional><attribute name="refname"><value>MainSubject</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x425</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<empty/>
+		</element>
+	</define>
+	<define name="MapScale">
+		<element name="MapScale">
+			<optional><attribute name="refname"><value>MapScale</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b063</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="Market">
+		<element name="Market">
+			<optional><attribute name="refname"><value>Market</value></attribute></optional>
+			<optional><attribute name="shortname"><value>market</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="Territory"/>
+				<zeroOrMore><ref name="SalesRestriction"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="MarketDate">
+		<element name="MarketDate">
+			<optional><attribute name="refname"><value>MarketDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>marketdate</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="MarketDateRole"/>
+				<optional><ref name="DateFormat"/></optional>
+				<ref name="Date"/>
+			</group>
+		</element>
+	</define>
+	<define name="MarketDateRole">
+		<element name="MarketDateRole">
+			<optional><attribute name="refname"><value>MarketDateRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j408</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List163"/>
+		</element>
+	</define>
+	<define name="MarketPublishingDetail">
+		<element name="MarketPublishingDetail">
+			<optional><attribute name="refname"><value>MarketPublishingDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>marketpublishingdetail</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<zeroOrMore><ref name="PublisherRepresentative"/></zeroOrMore>
+				<zeroOrMore><ref name="ProductContact"/></zeroOrMore>
+				<ref name="MarketPublishingStatus"/>
+				<zeroOrMore><ref name="MarketPublishingStatusNote"/></zeroOrMore>
+				<zeroOrMore><ref name="MarketDate"/></zeroOrMore>
+				<zeroOrMore><ref name="PromotionCampaign"/></zeroOrMore>
+				<optional><ref name="PromotionContact"/></optional>
+				<zeroOrMore><ref name="InitialPrintRun"/></zeroOrMore>
+				<zeroOrMore><ref name="ReprintDetail"/></zeroOrMore>
+				<zeroOrMore><ref name="CopiesSold"/></zeroOrMore>
+				<zeroOrMore><ref name="BookClubAdoption"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="MarketPublishingStatus">
+		<element name="MarketPublishingStatus">
+			<optional><attribute name="refname"><value>MarketPublishingStatus</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j407</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List68"/>
+		</element>
+	</define>
+	<define name="MarketPublishingStatusNote">
+		<element name="MarketPublishingStatusNote">
+			<optional><attribute name="refname"><value>MarketPublishingStatusNote</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x406</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="Measure">
+		<element name="Measure">
+			<optional><attribute name="refname"><value>Measure</value></attribute></optional>
+			<optional><attribute name="shortname"><value>measure</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="MeasureType"/>
+				<ref name="Measurement"/>
+				<ref name="MeasureUnitCode"/>
+			</group>
+		</element>
+	</define>
+	<define name="Measurement">
+		<element name="Measurement">
+			<optional><attribute name="refname"><value>Measurement</value></attribute></optional>
+			<optional><attribute name="shortname"><value>c094</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveDecimal"/>
+		</element>
+	</define>
+	<define name="MeasureType">
+		<element name="MeasureType">
+			<optional><attribute name="refname"><value>MeasureType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x315</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List48"/>
+		</element>
+	</define>
+	<define name="MeasureUnitCode">
+		<element name="MeasureUnitCode">
+			<optional><attribute name="refname"><value>MeasureUnitCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>c095</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List50"/>
+		</element>
+	</define>
+	<define name="MessageNote">
+		<element name="MessageNote">
+			<optional><attribute name="refname"><value>MessageNote</value></attribute></optional>
+			<optional><attribute name="shortname"><value>m183</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="MessageNumber">
+		<element name="MessageNumber">
+			<optional><attribute name="refname"><value>MessageNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>m180</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="MessageRepeat">
+		<element name="MessageRepeat">
+			<optional><attribute name="refname"><value>MessageRepeat</value></attribute></optional>
+			<optional><attribute name="shortname"><value>m181</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="MinimumOrderQuantity">
+		<element name="MinimumOrderQuantity">
+			<optional><attribute name="refname"><value>MinimumOrderQuantity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j263</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="NameAsSubject">
+		<element name="NameAsSubject">
+			<optional><attribute name="refname"><value>NameAsSubject</value></attribute></optional>
+			<optional><attribute name="shortname"><value>nameassubject</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="NameType"/></optional>
+				<choice>
+					<group>
+						<oneOrMore><ref name="NameIdentifier"/></oneOrMore>
+						<optional>
+							<choice>
+								<group>
+									<ref name="gp.unstructured_name"/>
+									<optional><ref name="gp.structured_name"/></optional>
+								</group>
+								<ref name="gp.structured_name"/>
+								<ref name="gp.corporate_name"/>
+							</choice>
+						</optional>
+					</group>
+					<group>
+						<choice>
+							<group>
+								<ref name="gp.unstructured_name"/>
+								<optional><ref name="gp.structured_name"/></optional>
+							</group>
+							<ref name="gp.structured_name"/>
+							<ref name="gp.corporate_name"/>
+						</choice>
+					</group>
+				</choice>
+			</group>
+		</element>
+	</define>
+	<define name="NameIdentifier">
+		<element name="NameIdentifier">
+			<optional><attribute name="refname"><value>NameIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>nameidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="NameIDType"/>
+			<optional><ref name="IDTypeName"/></optional>
+			<ref name="IDValue"/>
+		</element>
+	</define>
+	<define name="NameIDType">
+		<element name="NameIDType">
+			<optional><attribute name="refname"><value>NameIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x415</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List44"/>
+		</element>
+	</define>
+	<define name="NamesAfterKey">
+		<element name="NamesAfterKey">
+			<optional><attribute name="refname"><value>NamesAfterKey</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b041</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="NamesBeforeKey">
+		<element name="NamesBeforeKey">
+			<optional><attribute name="refname"><value>NamesBeforeKey</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b039</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="NameType">
+		<element name="NameType">
+			<optional><attribute name="refname"><value>NameType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x414</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List18"/>
+		</element>
+	</define>
+	<define name="NewSupplier">
+		<element name="NewSupplier">
+			<optional><attribute name="refname"><value>NewSupplier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>newsupplier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<choice>
+					<group>
+						<oneOrMore><ref name="SupplierIdentifier"/></oneOrMore>
+						<optional><ref name="SupplierName"/></optional>
+					</group>
+					<ref name="SupplierName"/>
+				</choice>
+				<zeroOrMore><ref name="TelephoneNumber"/></zeroOrMore>
+				<zeroOrMore><ref name="FaxNumber"/></zeroOrMore>
+				<zeroOrMore><ref name="EmailAddress"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="NoCollection">
+		<element name="NoCollection">
+			<optional><attribute name="refname"><value>NoCollection</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x411</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<empty/>
+		</element>
+	</define>
+	<define name="NoContributor">
+		<element name="NoContributor">
+			<optional><attribute name="refname"><value>NoContributor</value></attribute></optional>
+			<optional><attribute name="shortname"><value>n339</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<empty/>
+		</element>
+	</define>
+	<define name="NoEdition">
+		<element name="NoEdition">
+			<optional><attribute name="refname"><value>NoEdition</value></attribute></optional>
+			<optional><attribute name="shortname"><value>n386</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<empty/>
+		</element>
+	</define>
+	<define name="NoPrefix">
+		<element name="NoPrefix">
+			<optional><attribute name="refname"><value>NoPrefix</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x501</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<empty/>
+		</element>
+	</define>
+	<define name="NoProduct">
+		<element name="NoProduct">
+			<optional><attribute name="refname"><value>NoProduct</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x507</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<empty/>
+		</element>
+	</define>
+	<define name="NotificationType">
+		<element name="NotificationType">
+			<optional><attribute name="refname"><value>NotificationType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>a002</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List1"/>
+		</element>
+	</define>
+	<define name="Number">
+		<element name="Number">
+			<optional><attribute name="refname"><value>Number</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b257</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PositiveInteger"/>
+		</element>
+	</define>
+	<define name="NumberOfCopies">
+		<element name="NumberOfCopies">
+			<optional><attribute name="refname"><value>NumberOfCopies</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x323</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="NumberOfIllustrations">
+		<element name="NumberOfIllustrations">
+			<optional><attribute name="refname"><value>NumberOfIllustrations</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b125</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PositiveInteger"/>
+		</element>
+	</define>
+	<define name="NumberOfItemsOfThisForm">
+		<element name="NumberOfItemsOfThisForm">
+			<optional><attribute name="refname"><value>NumberOfItemsOfThisForm</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x322</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="NumberOfPages">
+		<element name="NumberOfPages">
+			<optional><attribute name="refname"><value>NumberOfPages</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b061</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="ONIXMessage">
+		<element name="ONIXMessage">
+			<optional><attribute name="refname"><value>ONIXMessage</value></attribute></optional>
+			<optional><attribute name="shortname"><value>ONIXmessage</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="releaseAttribute"/>
+			<group>
+				<ref name="Header"/>
+				<choice>
+					<ref name="NoProduct"/>
+					<oneOrMore><ref name="Product"/></oneOrMore>
+				</choice>
+			</group>
+		</element>
+	</define>
+	<define name="OnHand">
+		<element name="OnHand">
+			<optional><attribute name="refname"><value>OnHand</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j350</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.Integer"/>
+		</element>
+	</define>
+	<define name="OnOrder">
+		<element name="OnOrder">
+			<optional><attribute name="refname"><value>OnOrder</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j351</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PositiveInteger"/>
+		</element>
+	</define>
+	<define name="OnOrderDetail">
+		<element name="OnOrderDetail">
+			<optional><attribute name="refname"><value>OnOrderDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>onorderdetail</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="OnOrder"/>
+				<ref name="ExpectedDate"/>
+			</group>
+		</element>
+	</define>
+	<define name="OrderTime">
+		<element name="OrderTime">
+			<optional><attribute name="refname"><value>OrderTime</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j144</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PositiveInteger"/>
+		</element>
+	</define>
+	<define name="PackQuantity">
+		<element name="PackQuantity">
+			<optional><attribute name="refname"><value>PackQuantity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j145</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="PageRun">
+		<element name="PageRun">
+			<optional><attribute name="refname"><value>PageRun</value></attribute></optional>
+			<optional><attribute name="shortname"><value>pagerun</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="FirstPageNumber"/>
+				<optional><ref name="LastPageNumber"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="PartNumber">
+		<element name="PartNumber">
+			<optional><attribute name="refname"><value>PartNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x410</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Percent">
+		<element name="Percent">
+			<optional><attribute name="refname"><value>Percent</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b337</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PercentDecimal"/>
+		</element>
+	</define>
+	<define name="DiscountPercent">
+		<element name="DiscountPercent">
+			<optional><attribute name="refname"><value>DiscountPercent</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j267</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PercentDecimal"/>
+		</element>
+	</define>
+	<define name="PersonName">
+		<element name="PersonName">
+			<optional><attribute name="refname"><value>PersonName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b036</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="PersonNameInverted">
+		<element name="PersonNameInverted">
+			<optional><attribute name="refname"><value>PersonNameInverted</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b037</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="PositionOnList">
+		<element name="PositionOnList">
+			<optional><attribute name="refname"><value>PositionOnList</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x433</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="PositionOnProduct">
+		<element name="PositionOnProduct">
+			<optional><attribute name="refname"><value>PositionOnProduct</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x313</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List142"/>
+		</element>
+	</define>
+	<define name="PrefixToKey">
+		<element name="PrefixToKey">
+			<optional><attribute name="refname"><value>PrefixToKey</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b247</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Price">
+		<element name="Price">
+			<optional><attribute name="refname"><value>Price</value></attribute></optional>
+			<optional><attribute name="shortname"><value>price</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<zeroOrMore><ref name="PriceIdentifier"/></zeroOrMore>
+				<optional><ref name="PriceType"/></optional>
+				<optional><ref name="PriceQualifier"/></optional>
+				<zeroOrMore><ref name="PriceTypeDescription"/></zeroOrMore>
+				<optional><ref name="PricePer"/></optional>
+				<zeroOrMore><ref name="PriceCondition"/></zeroOrMore>
+				<optional><ref name="MinimumOrderQuantity"/></optional>
+				<zeroOrMore><ref name="BatchBonus"/></zeroOrMore>
+				<zeroOrMore><ref name="DiscountCoded"/></zeroOrMore>
+				<zeroOrMore><ref name="Discount"/></zeroOrMore>
+				<optional><ref name="PriceStatus"/></optional>
+				<choice>
+					<ref name="PriceAmount"/>
+					<ref name="PriceCoded"/>
+				</choice>
+				<zeroOrMore><ref name="Tax"/></zeroOrMore>
+				<optional><ref name="CurrencyCode"/></optional>
+				<optional><ref name="Territory"/></optional>
+				<optional><ref name="CurrencyZone"/></optional>
+				<zeroOrMore><ref name="ComparisonProductPrice"/></zeroOrMore>
+				<zeroOrMore><ref name="PriceDate"/></zeroOrMore>
+				<optional><ref name="PrintedOnProduct"/></optional>
+				<optional><ref name="PositionOnProduct"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="PriceAmount">
+		<element name="PriceAmount">
+			<optional><attribute name="refname"><value>PriceAmount</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j151</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveDecimal"/>
+		</element>
+	</define>
+	<define name="PriceCode">
+		<element name="PriceCode">
+			<optional><attribute name="refname"><value>PriceCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x468</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="PriceCoded">
+		<element name="PriceCoded">
+			<optional><attribute name="refname"><value>PriceCoded</value></attribute></optional>
+			<optional><attribute name="shortname"><value>pricecoded</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="PriceCodeType"/>
+				<optional><ref name="PriceCodeTypeName"/></optional>
+				<ref name="PriceCode"/>
+			</group>
+		</element>
+	</define>
+	<define name="PriceCodeType">
+		<element name="PriceCodeType">
+			<optional><attribute name="refname"><value>PriceCodeType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x465</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List179"/>
+		</element>
+	</define>
+	<define name="PriceCodeTypeName">
+		<element name="PriceCodeTypeName">
+			<optional><attribute name="refname"><value>PriceCodeTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x477</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="PriceCondition">
+		<element name="PriceCondition">
+			<optional><attribute name="refname"><value>PriceCondition</value></attribute></optional>
+			<optional><attribute name="shortname"><value>pricecondition</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="PriceConditionType"/>
+				<zeroOrMore><ref name="PriceConditionQuantity"/></zeroOrMore>
+				<zeroOrMore><ref name="ProductIdentifier"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="PriceConditionQuantity">
+		<element name="PriceConditionQuantity">
+			<optional><attribute name="refname"><value>PriceConditionQuantity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>priceconditionquantity</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="PriceConditionQuantityType"/>
+				<ref name="Quantity"/>
+				<ref name="QuantityUnit"/>
+			</group>
+		</element>
+	</define>
+	<define name="PriceConditionQuantityType">
+		<element name="PriceConditionQuantityType">
+			<optional><attribute name="refname"><value>PriceConditionQuantityType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x464</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List168"/>
+		</element>
+	</define>
+	<define name="PriceConditionType">
+		<element name="PriceConditionType">
+			<optional><attribute name="refname"><value>PriceConditionType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x463</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List167"/>
+		</element>
+	</define>
+	<define name="PriceDate">
+		<element name="PriceDate">
+			<optional><attribute name="refname"><value>PriceDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>pricedate</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="PriceDateRole"/>
+				<optional><ref name="DateFormat"/></optional>
+				<ref name="Date"/>
+			</group>
+		</element>
+	</define>
+	<define name="PriceDateRole">
+		<element name="PriceDateRole">
+			<optional><attribute name="refname"><value>PriceDateRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x476</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List173"/>
+		</element>
+	</define>
+	<define name="PriceIdentifier">
+		<element name="PriceIdentifier">
+			<optional><attribute name="refname"><value>PriceIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>priceidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="PriceIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="PriceIDType">
+		<element name="PriceIDType">
+			<optional><attribute name="refname"><value>PriceIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x506</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List217"/>
+		</element>
+	</define>
+	<define name="PricePer">
+		<element name="PricePer">
+			<optional><attribute name="refname"><value>PricePer</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j239</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List60"/>
+		</element>
+	</define>
+	<define name="PriceQualifier">
+		<element name="PriceQualifier">
+			<optional><attribute name="refname"><value>PriceQualifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j261</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List59"/>
+		</element>
+	</define>
+	<define name="PriceStatus">
+		<element name="PriceStatus">
+			<optional><attribute name="refname"><value>PriceStatus</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j266</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List61"/>
+		</element>
+	</define>
+	<define name="PriceType">
+		<element name="PriceType">
+			<optional><attribute name="refname"><value>PriceType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x462</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List58"/>
+		</element>
+	</define>
+	<define name="PriceTypeDescription">
+		<element name="PriceTypeDescription">
+			<optional><attribute name="refname"><value>PriceTypeDescription</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j262</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="PrimaryContentType">
+		<element name="PrimaryContentType">
+			<optional><attribute name="refname"><value>PrimaryContentType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x416</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List81"/>
+		</element>
+	</define>
+	<define name="PrimaryPart">
+		<element name="PrimaryPart">
+			<optional><attribute name="refname"><value>PrimaryPart</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x457</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<empty/>
+		</element>
+	</define>
+	<define name="PrintedOnProduct">
+		<element name="PrintedOnProduct">
+			<optional><attribute name="refname"><value>PrintedOnProduct</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x301</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List174"/>
+		</element>
+	</define>
+	<define name="Prize">
+		<element name="Prize">
+			<optional><attribute name="refname"><value>Prize</value></attribute></optional>
+			<optional><attribute name="shortname"><value>prize</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<oneOrMore><ref name="PrizeName"/></oneOrMore>
+				<optional><ref name="PrizeYear"/></optional>
+				<optional><ref name="PrizeCountry"/></optional>
+				<optional><ref name="PrizeCode"/></optional>
+				<zeroOrMore><ref name="PrizeStatement"/></zeroOrMore>
+				<zeroOrMore><ref name="PrizeJury"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="PrizeCode">
+		<element name="PrizeCode">
+			<optional><attribute name="refname"><value>PrizeCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>g129</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List41"/>
+		</element>
+	</define>
+	<define name="PrizeCountry">
+		<element name="PrizeCountry">
+			<optional><attribute name="refname"><value>PrizeCountry</value></attribute></optional>
+			<optional><attribute name="shortname"><value>g128</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List91"/>
+		</element>
+	</define>
+	<define name="PrizeJury">
+		<element name="PrizeJury">
+			<optional><attribute name="refname"><value>PrizeJury</value></attribute></optional>
+			<optional><attribute name="shortname"><value>g343</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="PrizeName">
+		<element name="PrizeName">
+			<optional><attribute name="refname"><value>PrizeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>g126</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="PrizeStatement">
+		<element name="PrizeStatement">
+			<optional><attribute name="refname"><value>PrizeStatement</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x503</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="PrizeYear">
+		<element name="PrizeYear">
+			<optional><attribute name="refname"><value>PrizeYear</value></attribute></optional>
+			<optional><attribute name="shortname"><value>g127</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.Year"/>
+		</element>
+	</define>
+	<define name="Product">
+		<element name="Product">
+			<optional><attribute name="refname"><value>Product</value></attribute></optional>
+			<optional><attribute name="shortname"><value>product</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="gp.record_metadata"/>
+				<ref name="gp.product_numbers"/>
+				<optional><ref name="DescriptiveDetail"/></optional>
+				<optional><ref name="CollateralDetail"/></optional>
+				<optional><ref name="ContentDetail"/></optional>
+				<optional><ref name="PublishingDetail"/></optional>
+				<optional><ref name="RelatedMaterial"/></optional>
+				<zeroOrMore><ref name="ProductSupply"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ProductAvailability">
+		<element name="ProductAvailability">
+			<optional><attribute name="refname"><value>ProductAvailability</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j396</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List65"/>
+		</element>
+	</define>
+	<define name="ProductClassification">
+		<element name="ProductClassification">
+			<optional><attribute name="refname"><value>ProductClassification</value></attribute></optional>
+			<optional><attribute name="shortname"><value>productclassification</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ProductClassificationType"/>
+				<ref name="ProductClassificationCode"/>
+				<optional><ref name="Percent"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="ProductClassificationCode">
+		<element name="ProductClassificationCode">
+			<optional><attribute name="refname"><value>ProductClassificationCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b275</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ProductClassificationType">
+		<element name="ProductClassificationType">
+			<optional><attribute name="refname"><value>ProductClassificationType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b274</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List9"/>
+		</element>
+	</define>
+	<define name="ProductComposition">
+		<element name="ProductComposition">
+			<optional><attribute name="refname"><value>ProductComposition</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x314</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List2"/>
+		</element>
+	</define>
+	<define name="ProductContact">
+		<element name="ProductContact">
+			<optional><attribute name="refname"><value>ProductContact</value></attribute></optional>
+			<optional><attribute name="shortname"><value>productcontact</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ProductContactRole"/>
+				<choice>
+					<group>
+						<oneOrMore><ref name="ProductContactIdentifier"/></oneOrMore>
+						<optional><ref name="ProductContactName"/></optional>
+					</group>
+					<ref name="ProductContactName"/>
+				</choice>
+				<optional><ref name="ContactName"/></optional>
+				<optional><ref name="EmailAddress"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="ProductContactIdentifier">
+		<element name="ProductContactIdentifier">
+			<optional><attribute name="refname"><value>ProductContactIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>productcontactidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ProductContactIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="ProductContactIDType">
+		<element name="ProductContactIDType">
+			<optional><attribute name="refname"><value>ProductContactIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x483</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List44"/>
+		</element>
+	</define>
+	<define name="ProductContactName">
+		<element name="ProductContactName">
+			<optional><attribute name="refname"><value>ProductContactName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x484</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ProductContactRole">
+		<element name="ProductContactRole">
+			<optional><attribute name="refname"><value>ProductContactRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x482</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List198"/>
+		</element>
+	</define>
+	<define name="ProductContentType">
+		<element name="ProductContentType">
+			<optional><attribute name="refname"><value>ProductContentType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b385</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List81"/>
+		</element>
+	</define>
+	<define name="ProductForm">
+		<element name="ProductForm">
+			<optional><attribute name="refname"><value>ProductForm</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b012</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List150"/>
+		</element>
+	</define>
+	<define name="ProductFormDescription">
+		<element name="ProductFormDescription">
+			<optional><attribute name="refname"><value>ProductFormDescription</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b014</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ProductFormDetail">
+		<element name="ProductFormDetail">
+			<optional><attribute name="refname"><value>ProductFormDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b333</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List175"/>
+		</element>
+	</define>
+	<define name="ProductFormFeature">
+		<element name="ProductFormFeature">
+			<optional><attribute name="refname"><value>ProductFormFeature</value></attribute></optional>
+			<optional><attribute name="shortname"><value>productformfeature</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ProductFormFeatureType"/>
+				<optional><ref name="ProductFormFeatureValue"/></optional>
+				<zeroOrMore><ref name="ProductFormFeatureDescription"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ProductFormFeatureDescription">
+		<element name="ProductFormFeatureDescription">
+			<optional><attribute name="refname"><value>ProductFormFeatureDescription</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b336</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ProductFormFeatureType">
+		<element name="ProductFormFeatureType">
+			<optional><attribute name="refname"><value>ProductFormFeatureType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b334</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List79"/>
+		</element>
+	</define>
+	<define name="ProductFormFeatureValue">
+		<element name="ProductFormFeatureValue">
+			<optional><attribute name="refname"><value>ProductFormFeatureValue</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b335</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ProductIDType">
+		<element name="ProductIDType">
+			<optional><attribute name="refname"><value>ProductIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b221</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List5"/>
+		</element>
+	</define>
+	<define name="ProductIdentifier">
+		<element name="ProductIdentifier">
+			<optional><attribute name="refname"><value>ProductIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>productidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ProductIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="ProductPackaging">
+		<element name="ProductPackaging">
+			<optional><attribute name="refname"><value>ProductPackaging</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b225</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List80"/>
+		</element>
+	</define>
+	<define name="ProductPart">
+		<element name="ProductPart">
+			<optional><attribute name="refname"><value>ProductPart</value></attribute></optional>
+			<optional><attribute name="shortname"><value>productpart</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="PrimaryPart"/></optional>
+				<zeroOrMore><ref name="ProductIdentifier"/></zeroOrMore>
+				<ref name="ProductForm"/>
+				<zeroOrMore><ref name="ProductFormDetail"/></zeroOrMore>
+				<zeroOrMore><ref name="ProductFormFeature"/></zeroOrMore>
+				<zeroOrMore><ref name="ProductFormDescription"/></zeroOrMore>
+				<zeroOrMore><ref name="ProductContentType"/></zeroOrMore>
+				<choice>
+					<group>
+						<ref name="NumberOfItemsOfThisForm"/>
+						<optional><ref name="NumberOfCopies"/></optional>
+					</group>
+					<ref name="NumberOfCopies"/>
+				</choice>
+				<optional><ref name="CountryOfManufacture"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="ProductRelationCode">
+		<element name="ProductRelationCode">
+			<optional><attribute name="refname"><value>ProductRelationCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x455</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List51"/>
+		</element>
+	</define>
+	<define name="ProductSupply">
+		<element name="ProductSupply">
+			<optional><attribute name="refname"><value>ProductSupply</value></attribute></optional>
+			<optional><attribute name="shortname"><value>productsupply</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<zeroOrMore><ref name="Market"/></zeroOrMore>
+				<optional><ref name="MarketPublishingDetail"/></optional>
+				<oneOrMore><ref name="SupplyDetail"/></oneOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ProfessionalAffiliation">
+		<element name="ProfessionalAffiliation">
+			<optional><attribute name="refname"><value>ProfessionalAffiliation</value></attribute></optional>
+			<optional><attribute name="shortname"><value>professionalaffiliation</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<choice>
+					<group>
+						<oneOrMore><ref name="ProfessionalPosition"/></oneOrMore>
+						<optional><ref name="Affiliation"/></optional>
+					</group>
+					<ref name="Affiliation"/>
+				</choice>
+			</group>
+		</element>
+	</define>
+	<define name="ProfessionalPosition">
+		<element name="ProfessionalPosition">
+			<optional><attribute name="refname"><value>ProfessionalPosition</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b045</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="PromotionCampaign">
+		<element name="PromotionCampaign">
+			<optional><attribute name="refname"><value>PromotionCampaign</value></attribute></optional>
+			<optional><attribute name="shortname"><value>k165</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="PromotionContact">
+		<element name="PromotionContact">
+			<optional><attribute name="refname"><value>PromotionContact</value></attribute></optional>
+			<optional><attribute name="shortname"><value>k166</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="Proximity">
+		<element name="Proximity">
+			<optional><attribute name="refname"><value>Proximity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x502</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List215"/>
+		</element>
+	</define>
+	<define name="Publisher">
+		<element name="Publisher">
+			<optional><attribute name="refname"><value>Publisher</value></attribute></optional>
+			<optional><attribute name="shortname"><value>publisher</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="PublishingRole"/>
+			<choice>
+				<group>
+					<oneOrMore><ref name="PublisherIdentifier"/></oneOrMore>
+					<optional><ref name="PublisherName"/></optional>
+				</group>
+				<ref name="PublisherName"/>
+			</choice>
+			<zeroOrMore><ref name="Website"/></zeroOrMore>
+		</element>
+	</define>
+	<define name="PublisherIdentifier">
+		<element name="PublisherIdentifier">
+			<optional><attribute name="refname"><value>PublisherIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>publisheridentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="PublisherIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="PublisherIDType">
+		<element name="PublisherIDType">
+			<optional><attribute name="refname"><value>PublisherIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x447</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List44"/>
+		</element>
+	</define>
+	<define name="PublisherName">
+		<element name="PublisherName">
+			<optional><attribute name="refname"><value>PublisherName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b081</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="PublisherRepresentative">
+		<element name="PublisherRepresentative">
+			<optional><attribute name="refname"><value>PublisherRepresentative</value></attribute></optional>
+			<optional><attribute name="shortname"><value>publisherrepresentative</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="AgentRole"/>
+				<choice>
+					<group>
+						<oneOrMore><ref name="AgentIdentifier"/></oneOrMore>
+						<optional><ref name="AgentName"/></optional>
+					</group>
+					<ref name="AgentName"/>
+				</choice>
+				<zeroOrMore><ref name="TelephoneNumber"/></zeroOrMore>
+				<zeroOrMore><ref name="FaxNumber"/></zeroOrMore>
+				<zeroOrMore><ref name="EmailAddress"/></zeroOrMore>
+				<zeroOrMore><ref name="Website"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="PublishingDate">
+		<element name="PublishingDate">
+			<optional><attribute name="refname"><value>PublishingDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>publishingdate</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="PublishingDateRole"/>
+				<optional><ref name="DateFormat"/></optional>
+				<ref name="Date"/>
+			</group>
+		</element>
+	</define>
+	<define name="PublishingDateRole">
+		<element name="PublishingDateRole">
+			<optional><attribute name="refname"><value>PublishingDateRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x448</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List163"/>
+		</element>
+	</define>
+	<define name="PublishingDetail">
+		<element name="PublishingDetail">
+			<optional><attribute name="refname"><value>PublishingDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>publishingdetail</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="gp.publisher"/>
+				<ref name="gp.publishing_status"/>
+				<ref name="gp.rights_restrictions"/>
+			</group>
+		</element>
+	</define>
+	<define name="PublishingRole">
+		<element name="PublishingRole">
+			<optional><attribute name="refname"><value>PublishingRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b291</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List45"/>
+		</element>
+	</define>
+	<define name="PublishingStatus">
+		<element name="PublishingStatus">
+			<optional><attribute name="refname"><value>PublishingStatus</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b394</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List64"/>
+		</element>
+	</define>
+	<define name="PublishingStatusNote">
+		<element name="PublishingStatusNote">
+			<optional><attribute name="refname"><value>PublishingStatusNote</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b395</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="Quantity">
+		<element name="Quantity">
+			<optional><attribute name="refname"><value>Quantity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x320</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PositiveDecimal"/>
+		</element>
+	</define>
+	<define name="QuantityUnit">
+		<element name="QuantityUnit">
+			<optional><attribute name="refname"><value>QuantityUnit</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x466</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List169"/>
+		</element>
+	</define>
+	<define name="Rate">
+		<element name="Rate">
+			<optional><attribute name="refname"><value>Rate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x505</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.Integer"/>
+		</element>
+	</define>
+	<define name="RecordReference">
+		<element name="RecordReference">
+			<optional><attribute name="refname"><value>RecordReference</value></attribute></optional>
+			<optional><attribute name="shortname"><value>a001</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="RecordSourceIdentifier">
+		<element name="RecordSourceIdentifier">
+			<optional><attribute name="refname"><value>RecordSourceIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>recordsourceidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="RecordSourceIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="RecordSourceIDType">
+		<element name="RecordSourceIDType">
+			<optional><attribute name="refname"><value>RecordSourceIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x311</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List44"/>
+		</element>
+	</define>
+	<define name="RecordSourceName">
+		<element name="RecordSourceName">
+			<optional><attribute name="refname"><value>RecordSourceName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>a197</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="RecordSourceType">
+		<element name="RecordSourceType">
+			<optional><attribute name="refname"><value>RecordSourceType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>a194</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List3"/>
+		</element>
+	</define>
+	<define name="RegionCode">
+		<element name="RegionCode">
+			<optional><attribute name="refname"><value>RegionCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b398</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List49"/>
+		</element>
+	</define>
+	<define name="RegionCodeList">
+		<list>
+			<oneOrMore><ref name="List49"/></oneOrMore>
+		</list>
+	</define>
+	<define name="RegionsIncluded">
+		<element name="RegionsIncluded">
+			<optional><attribute name="refname"><value>RegionsIncluded</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x450</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="RegionCodeList"/>
+		</element>
+	</define>
+	<define name="RegionsExcluded">
+		<element name="RegionsExcluded">
+			<optional><attribute name="refname"><value>RegionsExcluded</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x452</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="RegionCodeList"/>
+		</element>
+	</define>
+	<define name="Reissue">
+		<element name="Reissue">
+			<optional><attribute name="refname"><value>Reissue</value></attribute></optional>
+			<optional><attribute name="shortname"><value>reissue</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ReissueDate"/>
+				<optional><ref name="ReissueDescription"/></optional>
+				<zeroOrMore><ref name="Price"/></zeroOrMore>
+				<zeroOrMore><ref name="SupportingResource"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ReissueDate">
+		<element name="ReissueDate">
+			<optional><attribute name="refname"><value>ReissueDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j365</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dateformatAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ReissueDescription">
+		<element name="ReissueDescription">
+			<optional><attribute name="refname"><value>ReissueDescription</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j366</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="RelatedMaterial">
+		<element name="RelatedMaterial">
+			<optional><attribute name="refname"><value>RelatedMaterial</value></attribute></optional>
+			<optional><attribute name="shortname"><value>relatedmaterial</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<zeroOrMore><ref name="RelatedWork"/></zeroOrMore>
+				<zeroOrMore><ref name="RelatedProduct"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="RelatedProduct">
+		<element name="RelatedProduct">
+			<optional><attribute name="refname"><value>RelatedProduct</value></attribute></optional>
+			<optional><attribute name="shortname"><value>relatedproduct</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<oneOrMore><ref name="ProductRelationCode"/></oneOrMore>
+				<oneOrMore><ref name="ProductIdentifier"/></oneOrMore>
+				<optional>
+					<ref name="ProductForm"/>
+					<zeroOrMore><ref name="ProductFormDetail"/></zeroOrMore>
+				</optional>
+			</group>
+		</element>
+	</define>
+	<define name="RelatedWork">
+		<element name="RelatedWork">
+			<optional><attribute name="refname"><value>RelatedWork</value></attribute></optional>
+			<optional><attribute name="shortname"><value>relatedwork</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="WorkRelationCode"/>
+				<oneOrMore><ref name="WorkIdentifier"/></oneOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ReligiousText">
+		<element name="ReligiousText">
+			<optional><attribute name="refname"><value>ReligiousText</value></attribute></optional>
+			<optional><attribute name="shortname"><value>religioustext</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<choice>
+				<ref name="Bible"/>
+				<group>
+					<ref name="ReligiousTextIdentifier"/>
+					<oneOrMore><ref name="ReligiousTextFeature"/></oneOrMore>
+				</group>
+			</choice>
+		</element>
+	</define>
+	<define name="ReligiousTextFeature">
+		<element name="ReligiousTextFeature">
+			<optional><attribute name="refname"><value>ReligiousTextFeature</value></attribute></optional>
+			<optional><attribute name="shortname"><value>religioustextfeature</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ReligiousTextFeatureType"/>
+				<ref name="ReligiousTextFeatureCode"/>
+				<zeroOrMore><ref name="ReligiousTextFeatureDescription"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ReligiousTextFeatureCode">
+		<element name="ReligiousTextFeatureCode">
+			<optional><attribute name="refname"><value>ReligiousTextFeatureCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b359</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List90"/>
+		</element>
+	</define>
+	<define name="ReligiousTextFeatureDescription">
+		<element name="ReligiousTextFeatureDescription">
+			<optional><attribute name="refname"><value>ReligiousTextFeatureDescription</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b360</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="ReligiousTextFeatureType">
+		<element name="ReligiousTextFeatureType">
+			<optional><attribute name="refname"><value>ReligiousTextFeatureType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b358</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List89"/>
+		</element>
+	</define>
+	<define name="ReligiousTextIdentifier">
+		<element name="ReligiousTextIdentifier">
+			<optional><attribute name="refname"><value>ReligiousTextIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b376</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List88"/>
+		</element>
+	</define>
+	<define name="ReprintDetail">
+		<element name="ReprintDetail">
+			<optional><attribute name="refname"><value>ReprintDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>k309</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="ResourceContentType">
+		<element name="ResourceContentType">
+			<optional><attribute name="refname"><value>ResourceContentType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x436</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List158"/>
+		</element>
+	</define>
+	<define name="ResourceFeature">
+		<element name="ResourceFeature">
+			<optional><attribute name="refname"><value>ResourceFeature</value></attribute></optional>
+			<optional><attribute name="shortname"><value>resourcefeature</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="ResourceFeatureType"/>
+			<optional><ref name="FeatureValue"/></optional>
+			<zeroOrMore><ref name="FeatureNote"/></zeroOrMore>
+		</element>
+	</define>
+	<define name="ResourceFeatureType">
+		<element name="ResourceFeatureType">
+			<optional><attribute name="refname"><value>ResourceFeatureType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x438</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List160"/>
+		</element>
+	</define>
+	<define name="ResourceForm">
+		<element name="ResourceForm">
+			<optional><attribute name="refname"><value>ResourceForm</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x441</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List161"/>
+		</element>
+	</define>
+	<define name="ResourceLink">
+		<element name="ResourceLink">
+			<optional><attribute name="refname"><value>ResourceLink</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x435</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyURI"/>
+		</element>
+	</define>
+	<define name="ResourceMode">
+		<element name="ResourceMode">
+			<optional><attribute name="refname"><value>ResourceMode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x437</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List159"/>
+		</element>
+	</define>
+	<define name="ResourceVersion">
+		<element name="ResourceVersion">
+			<optional><attribute name="refname"><value>ResourceVersion</value></attribute></optional>
+			<optional><attribute name="shortname"><value>resourceversion</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="ResourceForm"/>
+			<zeroOrMore><ref name="ResourceVersionFeature"/></zeroOrMore>
+			<oneOrMore><ref name="ResourceLink"/></oneOrMore>
+			<zeroOrMore><ref name="ContentDate"/></zeroOrMore>
+		</element>
+	</define>
+	<define name="ResourceVersionFeature">
+		<element name="ResourceVersionFeature">
+			<optional><attribute name="refname"><value>ResourceVersionFeature</value></attribute></optional>
+			<optional><attribute name="shortname"><value>resourceversionfeature</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ResourceVersionFeatureType"/>
+				<optional><ref name="FeatureValue"/></optional>
+				<zeroOrMore><ref name="FeatureNote"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="ResourceVersionFeatureType">
+		<element name="ResourceVersionFeatureType">
+			<optional><attribute name="refname"><value>ResourceVersionFeatureType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x442</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List162"/>
+		</element>
+	</define>
+	<define name="ROWSalesRightsType">
+		<element name="ROWSalesRightsType">
+			<optional><attribute name="refname"><value>ROWSalesRightsType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x456</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List46"/>
+		</element>
+	</define>
+	<define name="ReturnsCode">
+		<element name="ReturnsCode">
+			<optional><attribute name="refname"><value>ReturnsCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j269</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ReturnsCodeType">
+		<element name="ReturnsCodeType">
+			<optional><attribute name="refname"><value>ReturnsCodeType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j268</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List53"/>
+		</element>
+	</define>
+	<define name="ReturnsCodeTypeName">
+		<element name="ReturnsCodeTypeName">
+			<optional><attribute name="refname"><value>ReturnsCodeTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x460</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ReturnsConditions">
+		<element name="ReturnsConditions">
+			<optional><attribute name="refname"><value>ReturnsConditions</value></attribute></optional>
+			<optional><attribute name="shortname"><value>returnsconditions</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ReturnsCodeType"/>
+				<optional><ref name="ReturnsCodeTypeName"/></optional>
+				<ref name="ReturnsCode"/>
+			</group>
+		</element>
+	</define>
+	<define name="SalesRights">
+		<element name="SalesRights">
+			<optional><attribute name="refname"><value>SalesRights</value></attribute></optional>
+			<optional><attribute name="shortname"><value>salesrights</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="SalesRightsType"/>
+				<ref name="Territory"/>
+				<zeroOrMore><ref name="SalesRestriction"/></zeroOrMore>
+				<zeroOrMore><ref name="ProductIdentifier"/></zeroOrMore>
+				<optional><ref name="PublisherName"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="SalesRightsType">
+		<element name="SalesRightsType">
+			<optional><attribute name="refname"><value>SalesRightsType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b089</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List46"/>
+		</element>
+	</define>
+	<define name="SalesOutlet">
+		<element name="SalesOutlet">
+			<optional><attribute name="refname"><value>SalesOutlet</value></attribute></optional>
+			<optional><attribute name="shortname"><value>salesoutlet</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<choice>
+					<group>
+						<oneOrMore><ref name="SalesOutletIdentifier"/></oneOrMore>
+						<optional><ref name="SalesOutletName"/></optional>
+					</group>
+					<ref name="SalesOutletName"/>
+				</choice>
+			</group>
+		</element>
+	</define>
+	<define name="SalesOutletIdentifier">
+		<element name="SalesOutletIdentifier">
+			<optional><attribute name="refname"><value>SalesOutletIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>salesoutletidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="SalesOutletIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="SalesOutletIDType">
+		<element name="SalesOutletIDType">
+			<optional><attribute name="refname"><value>SalesOutletIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b393</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List102"/>
+		</element>
+	</define>
+	<define name="SalesOutletName">
+		<element name="SalesOutletName">
+			<optional><attribute name="refname"><value>SalesOutletName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b382</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SalesRestriction">
+		<element name="SalesRestriction">
+			<optional><attribute name="refname"><value>SalesRestriction</value></attribute></optional>
+			<optional><attribute name="shortname"><value>salesrestriction</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="SalesRestrictionType"/>
+				<zeroOrMore><ref name="SalesOutlet"/></zeroOrMore>
+				<zeroOrMore><ref name="SalesRestrictionNote"/></zeroOrMore>
+				<optional><ref name="StartDate"/></optional>
+				<optional><ref name="EndDate"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="SalesRestrictionNote">
+		<element name="SalesRestrictionNote">
+			<optional><attribute name="refname"><value>SalesRestrictionNote</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x453</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="SalesRestrictionType">
+		<element name="SalesRestrictionType">
+			<optional><attribute name="refname"><value>SalesRestrictionType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b381</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List71"/>
+		</element>
+	</define>
+	<define name="ScriptCode">
+		<element name="ScriptCode">
+			<optional><attribute name="refname"><value>ScriptCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x420</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List121"/>
+		</element>
+	</define>
+	<define name="Sender">
+		<element name="Sender">
+			<optional><attribute name="refname"><value>Sender</value></attribute></optional>
+			<optional><attribute name="shortname"><value>sender</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<choice>
+					<group>
+						<oneOrMore><ref name="SenderIdentifier"/></oneOrMore>
+						<optional><ref name="SenderName"/></optional>
+					</group>
+					<ref name="SenderName"/>
+				</choice>
+				<optional><ref name="ContactName"/></optional>
+				<optional><ref name="EmailAddress"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="SenderIDType">
+		<element name="SenderIDType">
+			<optional><attribute name="refname"><value>SenderIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>m379</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List44"/>
+		</element>
+	</define>
+	<define name="SenderIdentifier">
+		<element name="SenderIdentifier">
+			<optional><attribute name="refname"><value>SenderIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>senderidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="SenderIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="SenderName">
+		<element name="SenderName">
+			<optional><attribute name="refname"><value>SenderName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x298</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SentDateTime">
+		<element name="SentDateTime">
+			<optional><attribute name="refname"><value>SentDateTime</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x307</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.DateOrDateTime"/>
+		</element>
+	</define>
+	<define name="SequenceNumber">
+		<element name="SequenceNumber">
+			<optional><attribute name="refname"><value>SequenceNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b034</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveInteger"/>
+		</element>
+	</define>
+	<define name="SourceName">
+		<element name="SourceName">
+			<optional><attribute name="refname"><value>SourceName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x330</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SourceTitle">
+		<element name="SourceTitle">
+			<optional><attribute name="refname"><value>SourceTitle</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x428</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SourceType">
+		<element name="SourceType">
+			<optional><attribute name="refname"><value>SourceType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x431</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List157"/>
+		</element>
+	</define>
+	<define name="StartDate">
+		<element name="StartDate">
+			<optional><attribute name="refname"><value>StartDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b324</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dateformatAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Stock">
+		<element name="Stock">
+			<optional><attribute name="refname"><value>Stock</value></attribute></optional>
+			<optional><attribute name="shortname"><value>stock</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="LocationIdentifier"/></optional>
+				<optional><ref name="LocationName"/></optional>
+				<choice>
+					<oneOrMore><ref name="StockQuantityCoded"/></oneOrMore>
+					<group>
+						<ref name="OnHand"/>
+						<optional><ref name="Proximity"/></optional>
+						<optional>
+							<ref name="OnOrder"/>
+							<optional><ref name="Proximity"/></optional>
+						</optional>
+						<optional>
+							<ref name="CBO"/>
+							<optional><ref name="Proximity"/></optional>
+						</optional>
+					</group>
+				</choice>
+				<zeroOrMore><ref name="OnOrderDetail"/></zeroOrMore>
+				<zeroOrMore><ref name="Velocity"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="StockQuantityCode">
+		<element name="StockQuantityCode">
+			<optional><attribute name="refname"><value>StockQuantityCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j297</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="StockQuantityCodeType">
+		<element name="StockQuantityCodeType">
+			<optional><attribute name="refname"><value>StockQuantityCodeType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j293</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List70"/>
+		</element>
+	</define>
+	<define name="StockQuantityCodeTypeName">
+		<element name="StockQuantityCodeTypeName">
+			<optional><attribute name="refname"><value>StockQuantityCodeTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j296</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="StockQuantityCoded">
+		<element name="StockQuantityCoded">
+			<optional><attribute name="refname"><value>StockQuantityCoded</value></attribute></optional>
+			<optional><attribute name="shortname"><value>stockquantitycoded</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="StockQuantityCodeType"/>
+				<optional><ref name="StockQuantityCodeTypeName"/></optional>
+				<ref name="StockQuantityCode"/>
+			</group>
+		</element>
+	</define>
+	<define name="StudyBibleType">
+		<element name="StudyBibleType">
+			<optional><attribute name="refname"><value>StudyBibleType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b389</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List84"/>
+		</element>
+	</define>
+	<define name="Subject">
+		<element name="Subject">
+			<optional><attribute name="refname"><value>Subject</value></attribute></optional>
+			<optional><attribute name="shortname"><value>subject</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="MainSubject"/></optional>
+				<ref name="SubjectSchemeIdentifier"/>
+				<optional><ref name="SubjectSchemeName"/></optional>
+				<optional><ref name="SubjectSchemeVersion"/></optional>
+				<choice>
+					<group>
+						<ref name="SubjectCode"/>
+						<zeroOrMore><ref name="SubjectHeadingText"/></zeroOrMore>
+					</group>
+					<oneOrMore><ref name="SubjectHeadingText"/></oneOrMore>
+				</choice>
+			</group>
+		</element>
+	</define>
+	<define name="SubjectCode">
+		<element name="SubjectCode">
+			<optional><attribute name="refname"><value>SubjectCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b069</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SubjectHeadingText">
+		<element name="SubjectHeadingText">
+			<optional><attribute name="refname"><value>SubjectHeadingText</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b070</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SubjectSchemeIdentifier">
+		<element name="SubjectSchemeIdentifier">
+			<optional><attribute name="refname"><value>SubjectSchemeIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b067</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List27"/>
+		</element>
+	</define>
+	<define name="SubjectSchemeName">
+		<element name="SubjectSchemeName">
+			<optional><attribute name="refname"><value>SubjectSchemeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b171</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SubjectSchemeVersion">
+		<element name="SubjectSchemeVersion">
+			<optional><attribute name="refname"><value>SubjectSchemeVersion</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b068</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Subtitle">
+		<element name="Subtitle">
+			<optional><attribute name="refname"><value>Subtitle</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b029</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="textcaseAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SuffixToKey">
+		<element name="SuffixToKey">
+			<optional><attribute name="refname"><value>SuffixToKey</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b248</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Supplier">
+		<element name="Supplier">
+			<optional><attribute name="refname"><value>Supplier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>supplier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="SupplierRole"/>
+				<choice>
+					<group>
+						<oneOrMore><ref name="SupplierIdentifier"/></oneOrMore>
+						<optional><ref name="SupplierName"/></optional>
+					</group>
+					<ref name="SupplierName"/>
+				</choice>
+				<zeroOrMore><ref name="TelephoneNumber"/></zeroOrMore>
+				<zeroOrMore><ref name="FaxNumber"/></zeroOrMore>
+				<zeroOrMore><ref name="EmailAddress"/></zeroOrMore>
+				<zeroOrMore><ref name="Website"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="SupplierCodeType">
+		<element name="SupplierCodeType">
+			<optional><attribute name="refname"><value>SupplierCodeType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x458</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List165"/>
+		</element>
+	</define>
+	<define name="SupplierCodeTypeName">
+		<element name="SupplierCodeTypeName">
+			<optional><attribute name="refname"><value>SupplierCodeTypeName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x513</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SupplierCodeValue">
+		<element name="SupplierCodeValue">
+			<optional><attribute name="refname"><value>SupplierCodeValue</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x459</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SupplierIdentifier">
+		<element name="SupplierIdentifier">
+			<optional><attribute name="refname"><value>SupplierIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>supplieridentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="SupplierIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="SupplierIDType">
+		<element name="SupplierIDType">
+			<optional><attribute name="refname"><value>SupplierIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j345</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List92"/>
+		</element>
+	</define>
+	<define name="SupplierName">
+		<element name="SupplierName">
+			<optional><attribute name="refname"><value>SupplierName</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j137</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="SupplierOwnCoding">
+		<element name="SupplierOwnCoding">
+			<optional><attribute name="refname"><value>SupplierOwnCoding</value></attribute></optional>
+			<optional><attribute name="shortname"><value>supplierowncoding</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="SupplierCodeType"/>
+				<optional><ref name="SupplierCodeTypeName"/></optional>
+				<ref name="SupplierCodeValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="SupplierRole">
+		<element name="SupplierRole">
+			<optional><attribute name="refname"><value>SupplierRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j292</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List93"/>
+		</element>
+	</define>
+	<define name="SupplyDate">
+		<element name="SupplyDate">
+			<optional><attribute name="refname"><value>SupplyDate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>supplydate</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="SupplyDateRole"/>
+				<optional><ref name="DateFormat"/></optional>
+				<ref name="Date"/>
+			</group>
+		</element>
+	</define>
+	<define name="SupplyDateRole">
+		<element name="SupplyDateRole">
+			<optional><attribute name="refname"><value>SupplyDateRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x461</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List166"/>
+		</element>
+	</define>
+	<define name="SupplyDetail">
+		<element name="SupplyDetail">
+			<optional><attribute name="refname"><value>SupplyDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>supplydetail</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="Supplier"/>
+				<zeroOrMore><ref name="SupplierOwnCoding"/></zeroOrMore>
+				<zeroOrMore><ref name="ReturnsConditions"/></zeroOrMore>
+				<ref name="ProductAvailability"/>
+				<zeroOrMore><ref name="SupplyDate"/></zeroOrMore>
+				<optional><ref name="OrderTime"/></optional>
+				<optional><ref name="NewSupplier"/></optional>
+				<zeroOrMore><ref name="Stock"/></zeroOrMore>
+				<optional><ref name="PackQuantity"/></optional>
+				<choice>
+					<ref name="UnpricedItemType"/>
+					<oneOrMore><ref name="Price"/></oneOrMore>
+				</choice>
+				<optional><ref name="Reissue"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="SupportingResource">
+		<element name="SupportingResource">
+			<optional><attribute name="refname"><value>SupportingResource</value></attribute></optional>
+			<optional><attribute name="shortname"><value>supportingresource</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="ResourceContentType"/>
+				<oneOrMore><ref name="ContentAudience"/></oneOrMore>
+				<ref name="ResourceMode"/>
+				<zeroOrMore><ref name="ResourceFeature"/></zeroOrMore>
+				<oneOrMore><ref name="ResourceVersion"/></oneOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="Tax">
+		<element name="Tax">
+			<optional><attribute name="refname"><value>Tax</value></attribute></optional>
+			<optional><attribute name="shortname"><value>tax</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="TaxType"/></optional>
+				<optional><ref name="TaxRateCode"/></optional>
+				<choice>
+					<group>
+						<ref name="TaxRatePercent"/>
+						<optional><ref name="TaxableAmount"/></optional>
+						<optional><ref name="TaxAmount"/></optional>
+					</group>
+					<group>
+						<optional><ref name="TaxableAmount"/></optional>
+						<ref name="TaxAmount"/>
+					</group>
+				</choice>
+			</group>
+		</element>
+	</define>
+	<define name="TaxAmount">
+		<element name="TaxAmount">
+			<optional><attribute name="refname"><value>TaxAmount</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x474</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PositiveDecimal"/>
+		</element>
+	</define>
+	<define name="TaxRateCode">
+		<element name="TaxRateCode">
+			<optional><attribute name="refname"><value>TaxRateCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x471</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List62"/>
+		</element>
+	</define>
+	<define name="TaxRatePercent">
+		<element name="TaxRatePercent">
+			<optional><attribute name="refname"><value>TaxRatePercent</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x472</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PercentDecimal"/>
+		</element>
+	</define>
+	<define name="TaxableAmount">
+		<element name="TaxableAmount">
+			<optional><attribute name="refname"><value>TaxableAmount</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x473</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.StrictPositiveDecimal"/>
+		</element>
+	</define>
+	<define name="TaxType">
+		<element name="TaxType">
+			<optional><attribute name="refname"><value>TaxType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x470</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List171"/>
+		</element>
+	</define>
+	<define name="TelephoneNumber">
+		<element name="TelephoneNumber">
+			<optional><attribute name="refname"><value>TelephoneNumber</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j270</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="Territory">
+		<element name="Territory">
+			<optional><attribute name="refname"><value>Territory</value></attribute></optional>
+			<optional><attribute name="shortname"><value>territory</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<choice>
+					<group>
+						<ref name="CountriesIncluded"/>
+						<optional>
+							<group>
+								<ref name="RegionsIncluded"/>
+								<optional><ref name="CountriesExcluded"/></optional>
+							</group>
+						</optional>
+					</group>
+					<group>
+						<ref name="RegionsIncluded"/>
+						<optional><ref name="CountriesExcluded"/></optional>
+					</group>
+				</choice>
+				<optional><ref name="RegionsExcluded"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="Text">
+		<element name="Text">
+			<optional><attribute name="refname"><value>Text</value></attribute></optional>
+			<optional><attribute name="shortname"><value>d104</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="TextAuthor">
+		<element name="TextAuthor">
+			<optional><attribute name="refname"><value>TextAuthor</value></attribute></optional>
+			<optional><attribute name="shortname"><value>d107</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="TextContent">
+		<element name="TextContent">
+			<optional><attribute name="refname"><value>TextContent</value></attribute></optional>
+			<optional><attribute name="shortname"><value>textcontent</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="TextType"/>
+				<oneOrMore><ref name="ContentAudience"/></oneOrMore>
+				<oneOrMore><ref name="Text"/></oneOrMore>
+				<zeroOrMore><ref name="TextAuthor"/></zeroOrMore>
+				<optional><ref name="TextSourceCorporate"/></optional>
+				<zeroOrMore><ref name="SourceTitle"/></zeroOrMore>
+				<zeroOrMore><ref name="ContentDate"/></zeroOrMore>
+			</group>
+		</element>
+	</define>
+	<define name="TextItem">
+		<element name="TextItem">
+			<optional><attribute name="refname"><value>TextItem</value></attribute></optional>
+			<optional><attribute name="shortname"><value>textitem</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="TextItemType"/>
+				<zeroOrMore><ref name="TextItemIdentifier"/></zeroOrMore>
+				<zeroOrMore><ref name="PageRun"/></zeroOrMore>
+				<optional><ref name="NumberOfPages"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="TextItemIDType">
+		<element name="TextItemIDType">
+			<optional><attribute name="refname"><value>TextItemIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b285</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List43"/>
+		</element>
+	</define>
+	<define name="TextItemIdentifier">
+		<element name="TextItemIdentifier">
+			<optional><attribute name="refname"><value>TextItemIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>textitemidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="TextItemIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="TextItemType">
+		<element name="TextItemType">
+			<optional><attribute name="refname"><value>TextItemType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b290</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List42"/>
+		</element>
+	</define>
+	<define name="TextSourceCorporate">
+		<element name="TextSourceCorporate">
+			<optional><attribute name="refname"><value>TextSourceCorporate</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b374</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="TextType">
+		<element name="TextType">
+			<optional><attribute name="refname"><value>TextType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x426</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List153"/>
+		</element>
+	</define>
+	<define name="ThesisPresentedTo">
+		<element name="ThesisPresentedTo">
+			<optional><attribute name="refname"><value>ThesisPresentedTo</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b369</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ThesisType">
+		<element name="ThesisType">
+			<optional><attribute name="refname"><value>ThesisType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b368</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List72"/>
+		</element>
+	</define>
+	<define name="ThesisYear">
+		<element name="ThesisYear">
+			<optional><attribute name="refname"><value>ThesisYear</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b370</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dateformatAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="TitleDetail">
+		<element name="TitleDetail">
+			<optional><attribute name="refname"><value>TitleDetail</value></attribute></optional>
+			<optional><attribute name="shortname"><value>titledetail</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="TitleType"/>
+				<oneOrMore><ref name="TitleElement"/></oneOrMore>
+				<optional><ref name="TitleStatement"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="TitleElement">
+		<element name="TitleElement">
+			<optional><attribute name="refname"><value>TitleElement</value></attribute></optional>
+			<optional><attribute name="shortname"><value>titleelement</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="SequenceNumber"/></optional>
+				<ref name="TitleElementLevel"/>
+				<choice>
+					<group>
+						<ref name="PartNumber"/>
+						<optional><ref name="YearOfAnnual"/></optional>
+						<optional>
+							<choice>
+								<ref name="TitleText"/>
+								<group>
+									<choice>
+										<ref name="TitlePrefix"/>
+										<ref name="NoPrefix"/>
+									</choice>
+									<ref name="TitleWithoutPrefix"/>
+								</group>
+							</choice>
+						</optional>
+					</group>
+					<group>
+						<ref name="YearOfAnnual"/>
+						<optional>
+							<choice>
+								<ref name="TitleText"/>
+								<group>
+									<choice>
+										<ref name="TitlePrefix"/>
+										<ref name="NoPrefix"/>
+									</choice>
+									<ref name="TitleWithoutPrefix"/>
+								</group>
+							</choice>
+						</optional>
+					</group>
+					<group>
+						<choice>
+							<ref name="TitlePrefix"/>
+							<ref name="NoPrefix"/>
+						</choice>
+						<ref name="TitleWithoutPrefix"/>
+					</group>
+					<ref name="TitleText"/>
+				</choice>
+				<optional><ref name="Subtitle"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="TitleElementLevel">
+		<element name="TitleElementLevel">
+			<optional><attribute name="refname"><value>TitleElementLevel</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x409</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List149"/>
+		</element>
+	</define>
+	<define name="TitlePrefix">
+		<element name="TitlePrefix">
+			<optional><attribute name="refname"><value>TitlePrefix</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b030</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="textcaseAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="TitlesAfterNames">
+		<element name="TitlesAfterNames">
+			<optional><attribute name="refname"><value>TitlesAfterNames</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b043</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="TitlesBeforeNames">
+		<element name="TitlesBeforeNames">
+			<optional><attribute name="refname"><value>TitlesBeforeNames</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b038</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="TitleStatement">
+		<element name="TitleStatement">
+			<optional><attribute name="refname"><value>TitleStatement</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x478</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="TitleText">
+		<element name="TitleText">
+			<optional><attribute name="refname"><value>TitleText</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b203</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="textcaseAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="TitleType">
+		<element name="TitleType">
+			<optional><attribute name="refname"><value>TitleType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b202</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List15"/>
+		</element>
+	</define>
+	<define name="TitleWithoutPrefix">
+		<element name="TitleWithoutPrefix">
+			<optional><attribute name="refname"><value>TitleWithoutPrefix</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b031</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="collationkeyAttribute"/>
+			<ref name="languageAttribute"/>
+			<ref name="textscriptAttribute"/>
+			<ref name="textcaseAttribute"/>
+			<ref name="dt.NonEmptyString"/>
+		</element>
+	</define>
+	<define name="ToLanguage">
+		<element name="ToLanguage">
+			<optional><attribute name="refname"><value>ToLanguage</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x413</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List74"/>
+		</element>
+	</define>
+	<define name="ToQuantity">
+		<element name="ToQuantity">
+			<optional><attribute name="refname"><value>ToQuantity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x514</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.PositiveDecimal"/>
+		</element>
+	</define>
+	<define name="TradeCategory">
+		<element name="TradeCategory">
+			<optional><attribute name="refname"><value>TradeCategory</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b384</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List12"/>
+		</element>
+	</define>
+	<define name="UnnamedPersons">
+		<element name="UnnamedPersons">
+			<optional><attribute name="refname"><value>UnnamedPersons</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b249</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List19"/>
+		</element>
+	</define>
+	<define name="UnpricedItemType">
+		<element name="UnpricedItemType">
+			<optional><attribute name="refname"><value>UnpricedItemType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>j192</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List57"/>
+		</element>
+	</define>
+	<define name="Velocity">
+		<element name="Velocity">
+			<optional><attribute name="refname"><value>Velocity</value></attribute></optional>
+			<optional><attribute name="shortname"><value>velocity</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="VelocityMetric"/>
+				<ref name="Rate"/>
+				<optional><ref name="Proximity"/></optional>
+			</group>
+		</element>
+	</define>
+	<define name="VelocityMetric">
+		<element name="VelocityMetric">
+			<optional><attribute name="refname"><value>VelocityMetric</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x504</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List216"/>
+		</element>
+	</define>
+	<define name="Website">
+		<element name="Website">
+			<optional><attribute name="refname"><value>Website</value></attribute></optional>
+			<optional><attribute name="shortname"><value>website</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<optional><ref name="WebsiteRole"/></optional>
+				<zeroOrMore><ref name="WebsiteDescription"/></zeroOrMore>
+				<ref name="WebsiteLink"/>
+			</group>
+		</element>
+	</define>
+	<define name="WebsiteDescription">
+		<element name="WebsiteDescription">
+			<optional><attribute name="refname"><value>WebsiteDescription</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b294</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="languageAttribute"/>
+			<ref name="textformatAttribute"/>
+			<ref name="Flow"/>
+		</element>
+	</define>
+	<define name="WebsiteLink">
+		<element name="WebsiteLink">
+			<optional><attribute name="refname"><value>WebsiteLink</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b295</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.NonEmptyURI"/>
+		</element>
+	</define>
+	<define name="WebsiteRole">
+		<element name="WebsiteRole">
+			<optional><attribute name="refname"><value>WebsiteRole</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b367</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List73"/>
+		</element>
+	</define>
+	<define name="WorkIdentifier">
+		<element name="WorkIdentifier">
+			<optional><attribute name="refname"><value>WorkIdentifier</value></attribute></optional>
+			<optional><attribute name="shortname"><value>workidentifier</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<group>
+				<ref name="WorkIDType"/>
+				<optional><ref name="IDTypeName"/></optional>
+				<ref name="IDValue"/>
+			</group>
+		</element>
+	</define>
+	<define name="WorkIDType">
+		<element name="WorkIDType">
+			<optional><attribute name="refname"><value>WorkIDType</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b201</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List16"/>
+		</element>
+	</define>
+	<define name="WorkRelationCode">
+		<element name="WorkRelationCode">
+			<optional><attribute name="refname"><value>WorkRelationCode</value></attribute></optional>
+			<optional><attribute name="shortname"><value>x454</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="List164"/>
+		</element>
+	</define>
+	<define name="YearOfAnnual">
+		<element name="YearOfAnnual">
+			<optional><attribute name="refname"><value>YearOfAnnual</value></attribute></optional>
+			<optional><attribute name="shortname"><value>b020</value></attribute></optional>
+			<ref name="generalAttributes"/>
+			<ref name="dt.YearOrYearRange"/>
+		</element>
+	</define>
+	<define name="gp.record_metadata">
+		<group>
+			<ref name="RecordReference"/>
+			<ref name="NotificationType"/>
+			<zeroOrMore><ref name="DeletionText"/></zeroOrMore>
+			<optional><ref name="RecordSourceType"/></optional>
+			<zeroOrMore><ref name="RecordSourceIdentifier"/></zeroOrMore>
+			<optional><ref name="RecordSourceName"/></optional>
+		</group>
+	</define>
+	<define name="gp.product_numbers">
+		<group>
+			<oneOrMore><ref name="ProductIdentifier"/></oneOrMore>
+			<zeroOrMore><ref name="Barcode"/></zeroOrMore>
+		</group>
+	</define>
+	<define name="gp.unstructured_name">
+		<choice>
+			<group>
+				<ref name="PersonName"/>
+				<optional><ref name="PersonNameInverted"/></optional>
+			</group>
+			<ref name="PersonNameInverted"/>
+		</choice>
+	</define>
+	<define name="gp.structured_name">
+		<group>
+			<optional><ref name="TitlesBeforeNames"/></optional>
+			<optional><ref name="NamesBeforeKey"/></optional>
+			<optional><ref name="PrefixToKey"/></optional>
+			<ref name="KeyNames"/>
+			<optional><ref name="NamesAfterKey"/></optional>
+			<optional><ref name="SuffixToKey"/></optional>
+			<optional><ref name="LettersAfterNames"/></optional>
+			<optional><ref name="TitlesAfterNames"/></optional>
+		</group>
+	</define>
+	<define name="gp.corporate_name">
+		<choice>
+			<group>
+				<ref name="CorporateName"/>
+				<optional><ref name="CorporateNameInverted"/></optional>
+			</group>
+			<ref name="CorporateNameInverted"/>
+		</choice>
+	</define>
+	<define name="gp.product_form">
+		<group>
+			<ref name="ProductComposition"/>
+			<ref name="ProductForm"/>
+			<zeroOrMore><ref name="ProductFormDetail"/></zeroOrMore>
+			<zeroOrMore><ref name="ProductFormFeature"/></zeroOrMore>
+			<optional><ref name="ProductPackaging"/></optional>
+			<zeroOrMore><ref name="ProductFormDescription"/></zeroOrMore>
+			<optional><ref name="TradeCategory"/></optional>
+			<optional><ref name="PrimaryContentType"/></optional>
+			<zeroOrMore><ref name="ProductContentType"/></zeroOrMore>
+			<zeroOrMore><ref name="Measure"/></zeroOrMore>
+			<optional><ref name="CountryOfManufacture"/></optional>
+			<zeroOrMore><ref name="EpubTechnicalProtection"/></zeroOrMore>
+			<zeroOrMore><ref name="EpubUsageConstraint"/></zeroOrMore>
+			<optional><ref name="EpubLicense"/></optional>
+			<zeroOrMore><ref name="MapScale"/></zeroOrMore>
+			<zeroOrMore><ref name="ProductClassification"/></zeroOrMore>
+			<zeroOrMore><ref name="ProductPart"/></zeroOrMore>
+		</group>
+	</define>
+	<define name="gp.collections">
+		<optional>
+			<choice>
+				<oneOrMore><ref name="Collection"/></oneOrMore>
+				<ref name="NoCollection"/>
+			</choice>
+		</optional>
+	</define>
+	<define name="gp.title">
+		<group>
+			<oneOrMore><ref name="TitleDetail"/></oneOrMore>
+			<optional>
+				<ref name="ThesisType"/>
+				<optional><ref name="ThesisPresentedTo"/></optional>
+				<optional><ref name="ThesisYear"/></optional>
+			</optional>
+		</group>
+	</define>
+	<define name="gp.authorship">
+		<choice>
+			<group>
+				<oneOrMore><ref name="Contributor"/></oneOrMore>
+				<zeroOrMore><ref name="ContributorStatement"/></zeroOrMore>
+			</group>
+			<optional><ref name="NoContributor"/></optional>
+		</choice>
+	</define>
+	<define name="gp.conference">
+		<zeroOrMore><ref name="Conference"/></zeroOrMore>
+	</define>
+	<define name="gp.edition">
+		<choice>
+			<group>
+				<zeroOrMore><ref name="EditionType"/></zeroOrMore>
+				<optional>
+					<ref name="EditionNumber"/>
+					<optional><ref name="EditionVersionNumber"/></optional>
+				</optional>
+				<zeroOrMore><ref name="EditionStatement"/></zeroOrMore>
+			</group>
+			<optional><ref name="NoEdition"/></optional>
+		</choice>
+		<optional><ref name="ReligiousText"/></optional>
+	</define>
+	<define name="gp.language">
+		<zeroOrMore><ref name="Language"/></zeroOrMore>
+	</define>
+	<define name="gp.extents">
+		<group>
+			<zeroOrMore><ref name="Extent"/></zeroOrMore>
+			<optional><ref name="Illustrated"/></optional>
+			<optional><ref name="NumberOfIllustrations"/></optional>
+			<zeroOrMore><ref name="IllustrationsNote"/></zeroOrMore>
+			<zeroOrMore><ref name="AncillaryContent"/></zeroOrMore>
+		</group>
+	</define>
+	<define name="gp.subject">
+		<group>
+			<zeroOrMore><ref name="Subject"/></zeroOrMore>
+			<zeroOrMore><ref name="NameAsSubject"/></zeroOrMore>
+		</group>
+	</define>  
+	<define name="gp.audience">
+		<group>
+			<zeroOrMore><ref name="AudienceCode"/></zeroOrMore>
+			<zeroOrMore><ref name="Audience"/></zeroOrMore>
+			<zeroOrMore><ref name="AudienceRange"/></zeroOrMore>
+			<zeroOrMore><ref name="AudienceDescription"/></zeroOrMore>
+			<zeroOrMore><ref name="Complexity"/></zeroOrMore>
+		</group>
+	</define>
+	<define name="gp.descriptions">
+		<group>
+			<zeroOrMore><ref name="TextContent"/></zeroOrMore>
+			<zeroOrMore><ref name="CitedContent"/></zeroOrMore>
+			<zeroOrMore><ref name="SupportingResource"/></zeroOrMore>
+		</group>
+	</define>
+	<define name="gp.prizes">
+		<zeroOrMore><ref name="Prize"/></zeroOrMore>
+	</define>
+	<define name="gp.publisher">
+		<group>
+			<choice>
+				<group>
+					<oneOrMore><ref name="Imprint"/></oneOrMore>
+					<zeroOrMore><ref name="Publisher"/></zeroOrMore>
+				</group>
+				<oneOrMore><ref name="Publisher"/></oneOrMore>
+			</choice>
+			<zeroOrMore><ref name="CityOfPublication"/></zeroOrMore>
+			<optional><ref name="CountryOfPublication"/></optional>
+			<zeroOrMore><ref name="ProductContact"/></zeroOrMore>
+		</group>
+	</define>
+	<define name="gp.publishing_status">
+		<group>
+			<optional>
+				<ref name="PublishingStatus"/>
+				<zeroOrMore><ref name="PublishingStatusNote"/></zeroOrMore>
+			</optional>
+			<zeroOrMore><ref name="PublishingDate"/></zeroOrMore>
+			<optional><ref name="LatestReprintNumber"/></optional>
+			<zeroOrMore><ref name="CopyrightStatement"/></zeroOrMore>
+		</group>
+	</define>
+	<define name="gp.rights_restrictions">
+		<group>
+			<optional>
+				<oneOrMore><ref name="SalesRights"/></oneOrMore>
+				<optional><ref name="ROWSalesRightsType"/></optional>
+			</optional>
+			<zeroOrMore><ref name="SalesRestriction"/></zeroOrMore>
+		</group>
+	</define>
+	<define name="dt.DateOrDateTime">
+		<choice>
+			<data type="string">
+				<param name="pattern">2\d\d\d(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-8])(T([01][0-9]|2[0-3])[0-5][0-9]([0-5][0-9])?(Z|[+\-](0[0-9]|1[0-2])(00|15|30|45))?)?</param>
+			</data>
+			<data type="string">
+				<param name="pattern">2\d\d\d(0[13-9]|1[0-2])(29|30)(T([01][0-9]|2[0-3])[0-5][0-9]([0-5][0-9])?(Z|[+\-](0[0-9]|1[0-2])(00|15|30|45))?)?</param>
+			</data>
+			<data type="string">
+				<param name="pattern">2\d\d\d(0[13578]|1[02])31(T([01][0-9]|2[0-3])[0-5][0-9]([0-5][0-9])?(Z|[+\-](0[0-9]|1[0-2])(00|15|30|45))?)?</param>
+			</data>
+			<data type="string">
+				<param name="pattern">2[048](0[048]|[13579][26]|[2468][048])0229(T([01][0-9]|2[0-3])[0-5][0-9]([0-5][0-9])?(Z|[+\-](0[0-9]|1[0-2])(00|15|30|45))?)?</param>
+			</data>
+			<data type="string">
+				<param name="pattern">2[1235679](0[48]|[13579][26]|[2468][048])0229(T([01][0-9]|2[0-3])[0-5][0-9]([0-5][0-9])?(Z|[+\-](0[0-9]|1[0-2])(00|15|30|45))?)?</param>
+			</data>
+		</choice>
+	</define>
+	<define name="dt.Decimal">
+		<data type="decimal"/>
+	</define>
+	<define name="dt.PositiveDecimal">
+		<data type="decimal">
+			<param name="minInclusive">0</param>
+		</data>
+	</define>
+	<define name="dt.StrictPositiveDecimal">
+		<data type="decimal">
+			<param name="minExclusive">0</param>
+		</data>
+	</define>
+	<define name="dt.PercentDecimal">
+		<data type="decimal">
+			<param name="minInclusive">0</param>
+			<param name="maxInclusive">100</param>
+		</data>
+	</define>
+	<define name="dt.Integer">
+		<data type="int"/>
+	</define>
+	<define name="dt.PositiveInteger">
+		<data type="nonNegativeInteger"/>
+	</define>
+	<define name="dt.StrictPositiveInteger">
+		<data type="positiveInteger"/>
+	</define>
+	<define name="dt.NonEmptyString">
+		<data type="string">
+			<param name="pattern">\s*\S.*</param>
+		</data>
+	</define>
+	<define name="dt.EmailString">
+		<data type="string">
+			<param name="pattern">[A-Za-z0-9_]+([\-+.'][A-Za-z0-9_]+)*@[A-Za-z0-9_]+([\-.][A-Za-z0-9_]+)*\.[A-Za-z0-9_]+([\-.][A-Za-z0-9_]+)*</param>
+		</data>
+	</define>
+	<define name="dt.RomanNumeralString">
+		<data type="string">
+			<param name="pattern">([MDCLXVI]+|[mdclxvi]+)</param>
+		</data>
+	</define>
+	<define name="dt.NonEmptyURI">
+		<data type="anyURI">
+			<param name="pattern">\S+</param>
+		</data>
+	</define>
+	<define name="dt.Year">
+		<data type="string">
+			<param name="pattern">[12]\d\d\d</param>
+		</data>
+	</define>
+	<define name="dt.YearOrYearRange">
+		<data type="string">
+			<param name="pattern">[12]\d\d\d(-[12]\d\d\d)?</param>
+		</data>
+	</define>
+	<define name="dt.MultiLevelNumber">
+		<data type="string">
+			<param name="pattern">\d+(\.\d+)?</param>
+		</data>
+	</define>
+	<define name="releaseAttribute">
+		<attribute name="release"><value>3.0</value></attribute>
+	</define>
+	<define name="collationkeyAttribute">
+		<optional><attribute name="collationkey"><text/></attribute></optional>
+	</define>
+	<define name="generalAttributes">
+		<optional><attribute name="datestamp"><ref name="dt.DateOrDateTime"/></attribute></optional>
+		<optional><attribute name="sourcetype"><ref name="SourceTypeCode"/></attribute></optional>
+		<optional><attribute name="sourcename"><text/></attribute></optional>
+	</define>
+	<define name="dateformatAttribute">
+		<optional><attribute name="dateformat"><ref name="List55"/></attribute></optional>
+	</define>
+	<define name="languageAttribute">
+		<optional><attribute name="language"><ref name="List74"/></attribute></optional>
+	</define>
+	<define name="textcaseAttribute">
+		<optional><attribute name="textcase"><ref name="TextCaseCode"/></attribute></optional>
+	</define>
+	<define name="textformatAttribute">
+		<optional><attribute name="textformat"><ref name="TextFormatCode"/></attribute></optional>
+	</define>
+	<define name="textscriptAttribute">
+		<optional><attribute name="textscript"><ref name="List121"/></attribute></optional>
+	</define>
+</grammar>

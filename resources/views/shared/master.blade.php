@@ -75,19 +75,24 @@
         var client = algoliasearch('0AX2Y3FFW8', 'ed59fb1126ff48502e68207c0488c5ba')
         var codelists = client.initIndex('codelists');
         var codes = client.initIndex('codes');
+        var elements = client.initIndex('elements');
 
         // Mustache templating by Hogan.js (http://mustache.github.io/)
         var templateCodelist = Hogan.compile('<div class="codelist">' +
-          '<div class="description">@{{{ _highlightResult.description.value }}}</div>' +
+          '<div class="description">@{{{ _highlightResult.description.value }}} <small>(Codelist @{{ number }})</small></div>' +
         '</div>');
 
         var templateCode = Hogan.compile('<div class="code">' +
           '<div class="description">@{{{ _highlightResult.description.value }}} <small>(Codelist @{{ codelist.number }}: @{{ codelist.description }})</small></div>' +
         '</div>');
 
+        var templateElement = Hogan.compile('<div class="code">' +
+          '<div class="description">&lt;@{{{ reference_name }}}&gt; or &lt;@{{{ short_name }}}&gt; <small>(Codelist @{{ codelist.number }}: @{{ codelist.description }})</small></div>' +
+        '</div>');
+
         $('#search-input').autocomplete({ hint: false }, [
           {
-            source: $.fn.autocomplete.sources.hits(codelists, { hitsPerPage: 5 }),
+            source: $.fn.autocomplete.sources.hits(codelists, { hitsPerPage: 8 }),
             displayKey: 'description',
             templates: {
               header: '<div class="category">Codelists</div>',
@@ -105,6 +110,17 @@
               suggestion: function(hit) {
                 // render the hit using Hogan.js
                 return templateCode.render(hit);
+              }
+            }
+          },
+          {
+            source: $.fn.autocomplete.sources.hits(elements, { hitsPerPage: 5 }),
+            displayKey: 'description',
+            templates: {
+              header: '<div class="category">Elements</div>',
+              suggestion: function(hit) {
+                // render the hit using Hogan.js
+                return templateElement.render(hit);
               }
             }
           }          

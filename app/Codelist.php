@@ -33,4 +33,12 @@ class Codelist extends Model
     {
         return $this->hasMany('App\Code');
     }
+
+    /**
+     * Get the Elements for the Codelist.
+     */
+    public function elements()
+    {
+        return $this->hasMany('App\Element');
+    }
 }
