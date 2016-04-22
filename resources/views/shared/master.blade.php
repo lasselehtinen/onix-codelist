@@ -67,10 +67,10 @@
 
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>    
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-      <script src="http://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
-      <script src="//cdn.jsdelivr.net/hogan.js/3.0/hogan.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/hogan.js/3.0/hogan.min.js"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>  
-      <script src="http://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script>
       <script>
         var client = algoliasearch('0AX2Y3FFW8', 'ed59fb1126ff48502e68207c0488c5ba')
         var codelists = client.initIndex('codelists');
