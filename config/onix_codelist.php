@@ -7,7 +7,7 @@ return [
     | Default Issue number
     |--------------------------------------------------------------------------
     |
-    | This option controls the default session "Issue number" that will be used.
+    | This option controls the default "Issue number" that will be used.
     |
      */
 
