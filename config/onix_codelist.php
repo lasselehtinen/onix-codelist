@@ -9,8 +9,8 @@ return [
     |
     | This option controls the default session "Issue number" that will be used.
     |
-    */
+     */
 
-    'issue_number' => env('ISSUE_NUMBER', 32),
+    'issue_number' => env('ISSUE_NUMBER', 33),
 
 ];
