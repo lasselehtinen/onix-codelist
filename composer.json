@@ -16,7 +16,8 @@
         "dingo/api": "1.0.x@dev",
         "hieu-le/active": "^3.0",
         "ipunkt/laravel-analytics": "^1.1",
-        "doctrine/dbal": "^2.5"
+        "doctrine/dbal": "^2.5",
+        "predis/predis": "^1.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
