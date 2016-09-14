@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Codelist;
 use App\Element;
+use Illuminate\Console\Command;
 
 class UpdateElements extends Command
 {
@@ -65,7 +65,7 @@ class UpdateElements extends Command
 
                         // Create element and attach the codelist to it
                         $codelist = Codelist::where('number', $output[1])->firstOrFail();
-                        $element = Element::firstOrCreate(['reference_name' => $referenceName, 'short_name' => $shortName]);
+                        $element = Element::firstOrNew(['reference_name' => $referenceName, 'short_name' => $shortName]);
                         $codelist->elements()->save($element);
                     }
                 }
