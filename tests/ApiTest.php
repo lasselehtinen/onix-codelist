@@ -1,26 +1,20 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\Codelist;
 use App\Code;
-use GuzzleHttp\Client;
+use App\Codelist;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class ApiTest extends TestCase
 {
-    protected static $databaseSeeded = false;
+    use DatabaseTransactions;
 
     public function setUp()
     {
         parent::setUp();
 
         // Migrate and seed the database
-        if (self::$databaseSeeded === false) {
-            Artisan::call('migrate:refresh');
-            Artisan::call('update:codelists');
-            self::$databaseSeeded = true;
-        }
+        Artisan::call('migrate');
+        Artisan::call('update:codelists');
     }
 
     /**
@@ -44,31 +38,31 @@ class ApiTest extends TestCase
         $this->get('/api/v1/codelist')->seeJsonStructure([
             'data' => [
                 '*' => [
-                    'id', 'number', 'description', 'number'
-                ]
+                    'id', 'number', 'description', 'number',
+                ],
             ],
             'meta' => [
                 'pagination' => [
-                    'total', 'count', 'per_page', 'current_page', 'total_pages', 'links'
-                ]
-            ]
+                    'total', 'count', 'per_page', 'current_page', 'total_pages', 'links',
+                ],
+            ],
         ]);
 
         // Individual codelist structure
         $this->get('/api/v1/codelist/1')->seeJsonStructure([
             'data' => [
-                'id', 'number', 'description', 'number'
-            ]
+                'id', 'number', 'description', 'number',
+            ],
         ]);
 
         // Individual codelist contents
         $this->json('GET', '/api/v1/codelist/1')->seeJsonEquals([
             'data' => [
-                'id'            => 1,
-                'number'        => 1,
-                'description'   => 'Notification or update type code',
-                'issue_number'  => 0
-            ]
+                'id' => 1,
+                'number' => 1,
+                'description' => 'Notification or update type code',
+                'issue_number' => 0,
+            ],
         ]);
     }
 
@@ -81,26 +75,26 @@ class ApiTest extends TestCase
         // Both parameters are non-numeric
         $this->json('get', '/api/v1/codelist', ['page' => 'incorrect', 'limit' => 'incorrect'])->seeJsonEquals([
             'message' => 'Could not list codelists.',
-              'errors' => [
-                    'page' => [
-                      'The page must be a number.'
-                    ],
-                    'limit' => [
-                      'The limit must be a number.'
-                    ]
-              ],
-              'status_code' => 422
+            'errors' => [
+                'page' => [
+                    'The page must be a number.',
+                ],
+                'limit' => [
+                    'The limit must be a number.',
+                ],
+            ],
+            'status_code' => 422,
         ]);
 
         // Page is less than 1
         $this->json('get', '/api/v1/codelist', ['page' => 0])->seeJsonEquals([
             'message' => 'Could not list codelists.',
-              'errors' => [
-                    'page' => [
-                      'The page must be at least 1.'
-                    ],
-              ],
-              'status_code' => 422
+            'errors' => [
+                'page' => [
+                    'The page must be at least 1.',
+                ],
+            ],
+            'status_code' => 422,
         ]);
     }
 
@@ -112,12 +106,12 @@ class ApiTest extends TestCase
     {
         $this->json('get', '/api/v1/codelist/12345')->seeJsonEquals([
             'message' => 'Could not list codelist.',
-              'errors' => [
-                    'number' => [
-                      'The selected number is invalid.'
-                    ],
-              ],
-              'status_code' => 422
+            'errors' => [
+                'number' => [
+                    'The selected number is invalid.',
+                ],
+            ],
+            'status_code' => 422,
         ]);
     }
 }

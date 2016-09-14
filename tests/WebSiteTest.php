@@ -1,26 +1,20 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\Codelist;
 use App\Code;
-use GuzzleHttp\Client;
+use App\Codelist;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class WebSiteTest extends TestCase
 {
-    protected static $databaseSeeded = false;
+    use DatabaseTransactions;
 
     public function setUp()
     {
         parent::setUp();
 
         // Migrate and seed the database
-        if (self::$databaseSeeded === false) {
-            Artisan::call('migrate:refresh');
-            Artisan::call('update:codelists');
-            self::$databaseSeeded = true;
-        }
+        Artisan::call('migrate');
+        Artisan::call('update:codelists');
     }
 
     /**

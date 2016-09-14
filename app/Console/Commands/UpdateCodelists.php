@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Codelist;
 use App\Code;
+use App\Codelist;
 use GuzzleHttp\Client;
-use League\Uri\Schemes\Http as HttpUri;
+use Illuminate\Console\Command;
 use League\Uri\Modifiers\AppendSegment;
+use League\Uri\Schemes\Http as HttpUri;
 
 class UpdateCodelists extends Command
 {
@@ -54,7 +54,7 @@ class UpdateCodelists extends Command
 
         // Parse codelists from response
         $onixCodelists = json_decode($response->getBody()->getContents());
-        
+
         // Disable Algolia auto-indexing temporarily
         Codelist::$autoIndex = false;
         Code::$autoIndex = false;
@@ -72,7 +72,7 @@ class UpdateCodelists extends Command
                     $code = Code::updateAndAttach($onixCodelistCode, $codelist);
                 }
             }
-            
+
             // In case of one code, pass the object
             if (isset($onixCodelist->Code) && is_object($onixCodelist->Code)) {
                 $code = Code::updateAndAttach($onixCodelist->Code, $codelist);

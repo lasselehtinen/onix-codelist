@@ -1,7 +1,5 @@
 <?php
 
-use App\Codelist;
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -11,7 +9,7 @@ use App\Codelist;
 | it contains. The "web" middleware group is defined in your HTTP
 | kernel and includes session state, CSRF protection, and more.
 |
-*/
+ */
 
 Route::group(['middleware' => ['web']], function () {
     Route::resource('codelist', 'CodelistController', ['only' => ['index', 'show']]);
@@ -29,13 +27,4 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/', function () {
         return redirect()->route('codelist.index');
     });
-});
-
-// API routes
-
-$api = app('Dingo\Api\Routing\Router');
-
-$api->version('v1', function ($api) {
-    $api->get('/v1/codelist', 'App\Api\V1\Controllers\OnixCodelistController@index');
-    $api->get('/v1/codelist/{number}', 'App\Api\V1\Controllers\OnixCodelistController@show');
 });

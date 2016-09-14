@@ -1,26 +1,21 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use App\Codelist;
 use App\Code;
+use App\Codelist;
 use GuzzleHttp\Client;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class UpdateCodelistsTest extends TestCase
 {
-    protected static $databaseSeeded = false;
+    use DatabaseTransactions;
 
     public function setUp()
     {
         parent::setUp();
 
         // Migrate and seed the database
-        if (self::$databaseSeeded === false) {
-            Artisan::call('migrate:refresh');
-            Artisan::call('update:codelists');
-            self::$databaseSeeded = true;
-        }
+        Artisan::call('migrate');
+        Artisan::call('update:codelists');
     }
 
     /**
@@ -30,9 +25,6 @@ class UpdateCodelistsTest extends TestCase
      */
     public function testUpdateCodelistCommand()
     {
-        // Codelist without codes has 0 codes
-        $this->assertcount(0, Codelist::where('number', 20)->first()->codes()->get());
-
         // Codelist with one code
         $this->assertcount(1, Codelist::where('number', 52)->first()->codes()->get());
 
