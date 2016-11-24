@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
 class CreateCodesTable extends Migration
 {
@@ -18,7 +18,7 @@ class CreateCodesTable extends Migration
             $table->integer('codelist_id')->unsigned();
             $table->string('value');
             $table->string('description');
-            $table->string('notes')->nullable();
+            $table->longtext('notes')->nullable();
             $table->integer('issue_number');
         });
     }
