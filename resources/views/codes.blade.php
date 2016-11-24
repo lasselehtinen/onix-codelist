@@ -11,20 +11,20 @@
       <th>Value</th>
       <th>Description</th>
       <th>Notes</th>
-      <th>Issue number</th>              
+      <th>Issue number</th>
     </tr>
   </thead>
   <tbody>
     @foreach ($codelist->codes as $code)
     <tr>
       <td>{{ $code->value }}</td>
-      <td>{{ $code->description }}</td>
-      <td>{{ $code->notes }}</td>
+      <td>{{ $code->translate()->description }}</td>
+      <td>{{ $code->translate()->notes }}</td>
       <td>{{ $code->issue_number }}</td>
     </tr>
-    @endforeach            
+    @endforeach
   </tbody>
 </table>
-        
+
 <a href="{{ URL::previous() }}">Back to Codelists</a>
 @endsection

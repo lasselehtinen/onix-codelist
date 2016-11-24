@@ -17,8 +17,6 @@ class CreateCodesTable extends Migration
             $table->timestamps();
             $table->integer('codelist_id')->unsigned();
             $table->string('value');
-            $table->string('description');
-            $table->longtext('notes')->nullable();
             $table->integer('issue_number');
         });
     }

@@ -69,16 +69,43 @@ class UpdateCodelists extends Command
 
             $codelist->save();
 
+            // Remove all existing codes from codelist
+            $codelist->codes()->delete();
+
             // In case of many codes, go through array
             if (isset($onixCodelist->Code) && is_array($onixCodelist->Code)) {
                 foreach ($onixCodelist->Code as $onixCodelistCode) {
-                    $code = Code::updateAndAttach($onixCodelistCode, $codelist);
+                    $code = new Code;
+                    $code->codelist_id = $codelist->id;
+                    $code->value = $onixCodelistCode->CodeValue;
+                    $code->issue_number = $onixCodelistCode->IssueNumber;
+                    $code->save();
+
+                    // Save the english description and notes
+                    $code->translateOrNew('en')->description = $onixCodelistCode->CodeDescription;
+                    if (isset($onixCodelistCode->CodeNotes)) {
+                        $code->translateOrNew('en')->notes = $onixCodelistCode->CodeNotes;
+                    }
+
+                    $code->save();
                 }
             }
 
             // In case of one code, pass the object
             if (isset($onixCodelist->Code) && is_object($onixCodelist->Code)) {
-                $code = Code::updateAndAttach($onixCodelist->Code, $codelist);
+                $code = new Code;
+                $code->codelist_id = $codelist->id;
+                $code->value = $onixCodelistCode->CodeValue;
+                $code->issue_number = $onixCodelistCode->IssueNumber;
+                $code->save();
+
+                // Save the english description and notes
+                $code->translateOrNew('en')->description = $onixCodelistCode->CodeDescription;
+                if (isset($onixCodelistCode->CodeNotes)) {
+                    $code->translateOrNew('en')->notes = $onixCodelistCode->CodeNotes;
+                }
+
+                $code->save();
             }
         }
 

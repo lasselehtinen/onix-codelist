@@ -2,12 +2,14 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use AlgoliaSearch\Laravel\AlgoliaEloquentTrait;
+use Dimsav\Translatable\Translatable;
+use Illuminate\Database\Eloquent\Model;
 
 class Code extends Model
 {
     use AlgoliaEloquentTrait;
+    use Translatable;
 
     public static $autoIndex = true;
     public static $autoDelete = true;
@@ -19,6 +21,8 @@ class Code extends Model
             'notes',
         ],
     ];
+
+    public $translatedAttributes = ['description', 'notes'];
 
     /**
      * The attributes that are mass assignable.
@@ -33,23 +37,6 @@ class Code extends Model
     public function codelist()
     {
         return $this->belongsTo('App\Codelist');
-    }
-
-    /**
-     * Creates or updates the Codelist Code and attaches it to the codelist through the attribute query
-     * @param  \stdClass $code
-     * @param  Codelist  $codelist
-     * @return Code
-     */
-    public static function updateAndAttach(\stdClass $code, Codelist $codelist)
-    {
-        $code = Code::updateOrCreate(['codelist_id' => $codelist->id, 'value' => $code->CodeValue], [
-            'description'   => $code->CodeDescription,
-            'notes'         => isset($code->CodeNotes) ? $code->CodeNotes : null,
-            'issue_number'  => $code->IssueNumber,
-        ]);
-
-        return $code;
     }
 
     /**
