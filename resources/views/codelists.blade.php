@@ -19,11 +19,11 @@
     @foreach ($codelists as $codelist)
     <tr>
       <td>{{ $codelist->number }}</td>
-      <td>{{ $codelist->description }}</td>
+      <td>{{ $codelist->translate()->description }}</td>
       <td>{{ $codelist->issue_number }}</td>
       <td><a href="{{ route('codelist.show', ['number' => $codelist->number]) }}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span></a></td>
     </tr>
-    @endforeach            
+    @endforeach
   </tbody>
 </table>
 

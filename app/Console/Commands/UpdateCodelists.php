@@ -62,8 +62,11 @@ class UpdateCodelists extends Command
         foreach ($onixCodelists->CodeList as $onixCodelist) {
             // Create or update codelist
             $codelist = Codelist::firstOrCreate(['number' => $onixCodelist->CodeListNumber]);
-            $codelist->description = $onixCodelist->CodeListDescription;
             $codelist->issue_number = $onixCodelist->IssueNumber;
+
+            // Save the english description
+            $codelist->translateOrNew('en')->description = $onixCodelist->CodeListDescription;
+
             $codelist->save();
 
             // In case of many codes, go through array
@@ -80,15 +83,13 @@ class UpdateCodelists extends Command
         }
 
         // Reindex Algolia and set settings
-        if (app()->environment() === 'production') {
-            Codelist::clearIndices();
-            Codelist::reindex();
-            Codelist::setSettings();
+        Codelist::clearIndices();
+        Codelist::reindex();
+        Codelist::setSettings();
 
-            Code::clearIndices();
-            Code::reindex();
-            Code::setSettings();
-        }
+        Code::clearIndices();
+        Code::reindex();
+        Code::setSettings();
     }
 
     /**

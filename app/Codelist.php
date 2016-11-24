@@ -2,12 +2,14 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use AlgoliaSearch\Laravel\AlgoliaEloquentTrait;
+use Dimsav\Translatable\Translatable;
+use Illuminate\Database\Eloquent\Model;
 
 class Codelist extends Model
 {
     use AlgoliaEloquentTrait;
+    use Translatable;
 
     public static $autoIndex = true;
     public static $autoDelete = true;
@@ -18,6 +20,8 @@ class Codelist extends Model
             'number',
         ],
     ];
+
+    public $translatedAttributes = ['description'];
 
     /**
      * The attributes that are mass assignable.

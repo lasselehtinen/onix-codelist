@@ -173,6 +173,7 @@ return [
         Dingo\Api\Provider\LaravelServiceProvider::class,
         HieuLe\Active\ActiveServiceProvider::class,
         Ipunkt\LaravelAnalytics\AnalyticsServiceProvider::class,
+        Dimsav\Translatable\TranslatableServiceProvider::class,
     ],
 
     /*
