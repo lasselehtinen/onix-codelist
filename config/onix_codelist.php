@@ -11,6 +11,6 @@ return [
     |
      */
 
-    'issue_number' => env('ISSUE_NUMBER', 35),
+    'issue_number' => env('ISSUE_NUMBER', 36),
 
 ];
