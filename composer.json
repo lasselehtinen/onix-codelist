@@ -18,7 +18,8 @@
         "ipunkt/laravel-analytics": "^1.1",
         "doctrine/dbal": "^2.5",
         "predis/predis": "^1.1",
-        "dimsav/laravel-translatable": "^6.0"
+        "dimsav/laravel-translatable": "^6.0",
+        "pda/pheanstalk": "~3.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
