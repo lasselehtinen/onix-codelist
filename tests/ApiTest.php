@@ -24,7 +24,7 @@ class ApiTest extends TestCase
      */
     public function testGetCodelists()
     {
-        $this->get('/api/v1/codelist')->seeJson(['number' => 1, 'description' => 'Notification or update type code']);
+        $this->get('/api/v1/codelist')->seeJson(['number' => 1, 'description' => 'Notification or update type']);
         $this->delete('/api/v1/codelist')->seeJsonEquals(['message' => '405 Method Not Allowed', 'status_code' => 405]);
     }
 
@@ -60,7 +60,7 @@ class ApiTest extends TestCase
             'data' => [
                 'id' => 1,
                 'number' => 1,
-                'description' => 'Notification or update type code',
+                'description' => 'Notification or update type',
                 'issue_number' => 0,
             ],
         ]);

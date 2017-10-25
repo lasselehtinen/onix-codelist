@@ -26,7 +26,7 @@ class UpdateCodelistsTest extends TestCase
     public function testUpdateCodelistCommand()
     {
         // Codelist with one code
-        $this->assertcount(1, Codelist::where('number', 52)->first()->codes()->get());
+        $this->assertcount(1, Codelist::where('number', 97)->first()->codes()->get());
 
         // Codelist with more than one code
         $this->assertGreaterThanOrEqual(2, Codelist::where('number', 1)->first()->codes()->get()->count());
@@ -36,7 +36,7 @@ class UpdateCodelistsTest extends TestCase
 
         // Check that the notes are not truncated
         $code = Codelist::where('number', 1)->first()->codes()->where('value', '05')->first();
-        $this->assertEquals('Use when sending an instruction to delete a record which was previously issued. Note that a Delete instruction should NOT be used when a product is cancelled, put out of print, or otherwise withdrawn from sale: this should be handled as a change of Publishing status, leaving the receiver to decide whether to retain or delete the record. A Delete instruction is only used when there is a particular reason to withdraw a record completely, eg because it was issued in error', $code->notes);
+        $this->assertEquals('Use when sending an instruction to delete a record which was previously issued. Note that a Delete instruction should NOT be used when a product is cancelled, put out of print, or otherwise withdrawn from sale: this should be handled as a change of Publishing status, leaving the receiver to decide whether to retain or delete the record. A Delete instruction is used ONLY when there is a particular reason to withdraw a record completely, eg because it was issued in error', $code->notes);
     }
 
     /**
