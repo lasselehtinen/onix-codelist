@@ -24,20 +24,9 @@ class WebSiteTest extends TestCase
      */
     public function testFrontPageRedirect()
     {
-        $response = $this->call('GET', '/');
-        $this->assertResponseStatus(302);
-        $this->assertRedirectedTo('/codelist');
-    }
-
-    /**
-     * Test that clicking the menu items redirects you to correct page
-     * @return void
-     */
-    public function testMenus()
-    {
-        $this->visit('/')->click('Codelists')->seePageIs('/codelist')->see('Onix codelists');
-        $this->visit('/')->click('API')->seePageIs('/api-docs')->see('API documentation');
-        $this->visit('/')->click('About')->seePageIs('/about')->see('About ONIX for Books codelists');
+        $response = $this->get('/');
+        $response->assertStatus(302);
+        $response->assertRedirect('/codelist');
     }
 
     /**
@@ -46,7 +35,7 @@ class WebSiteTest extends TestCase
      */
     public function testNonExistingPage()
     {
-        $response = $this->call('GET', 'this_page_does_not_exist');
-        $this->assertResponseStatus(404);
+        $response = $this->get('/this_page_does_not_exist');
+        $response->assertStatus(404);
     }
 }

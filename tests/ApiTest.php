@@ -24,8 +24,27 @@ class ApiTest extends TestCase
      */
     public function testGetCodelists()
     {
-        $this->get('/api/v1/codelist')->seeJson(['number' => 1, 'description' => 'Notification or update type']);
-        $this->delete('/api/v1/codelist')->seeJsonEquals(['message' => '405 Method Not Allowed', 'status_code' => 405]);
+        // List all codelists
+        $response = $this->json('GET', '/api/v1/codelist');
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'id' => 1,
+                'number' => 1,
+                'description' => 'Notification or update type',
+                'issue_number' => 0,
+            ]);
+
+        // Deleting codelists
+        $response = $this->json('DELETE', '/api/v1/codelist');
+
+        $response
+            ->assertStatus(405)
+            ->assertExactJson([
+                'message' => '405 Method Not Allowed',
+                'status_code' => 405,
+            ]);        
     }
 
     /**
@@ -35,7 +54,7 @@ class ApiTest extends TestCase
     public function testGetCodelistStructure()
     {
         // All codelists with pagination metadata
-        $this->get('/api/v1/codelist')->seeJsonStructure([
+        $this->get('/api/v1/codelist')->assertJsonStructure([
             'data' => [
                 '*' => [
                     'id', 'number', 'description', 'number',
@@ -49,14 +68,14 @@ class ApiTest extends TestCase
         ]);
 
         // Individual codelist structure
-        $this->get('/api/v1/codelist/1')->seeJsonStructure([
+        $this->get('/api/v1/codelist/1')->assertJsonStructure([
             'data' => [
                 'id', 'number', 'description', 'number',
             ],
         ]);
 
         // Individual codelist contents
-        $this->json('GET', '/api/v1/codelist/1')->seeJsonEquals([
+        $this->json('GET', '/api/v1/codelist/1')->assertExactJson([
             'data' => [
                 'id' => 1,
                 'number' => 1,
@@ -73,7 +92,7 @@ class ApiTest extends TestCase
     public function testIncorrectPageAndLimitParameters()
     {
         // Both parameters are non-numeric
-        $this->json('get', '/api/v1/codelist', ['page' => 'incorrect', 'limit' => 'incorrect'])->seeJsonEquals([
+        $this->json('get', '/api/v1/codelist', ['page' => 'incorrect', 'limit' => 'incorrect'])->assertExactJson([
             'message' => 'Could not list codelists.',
             'errors' => [
                 'page' => [
@@ -87,7 +106,7 @@ class ApiTest extends TestCase
         ]);
 
         // Page is less than 1
-        $this->json('get', '/api/v1/codelist', ['page' => 0])->seeJsonEquals([
+        $this->json('get', '/api/v1/codelist', ['page' => 0])->assertExactJson([
             'message' => 'Could not list codelists.',
             'errors' => [
                 'page' => [
@@ -104,7 +123,7 @@ class ApiTest extends TestCase
      */
     public function testInvalidCodelistNumber()
     {
-        $this->json('get', '/api/v1/codelist/12345')->seeJsonEquals([
+        $this->json('get', '/api/v1/codelist/12345')->assertExactJson([
             'message' => 'Could not list codelist.',
             'errors' => [
                 'number' => [
