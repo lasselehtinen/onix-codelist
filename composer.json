@@ -11,7 +11,7 @@
         "php": ">=5.6.4",
         "laravel/framework": "5.3.*",
         "guzzlehttp/guzzle": "~6.0",
-        "league/uri": "^4.1",
+        "league/uri": "^5.0",
         "algolia/algoliasearch-laravel": "^1.0",
         "dingo/api": "1.0.x@dev",
         "hieu-le/active": "^3.0",
