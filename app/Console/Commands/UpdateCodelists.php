@@ -74,11 +74,16 @@ class UpdateCodelists extends Command
 
             // In case of many codes, go through array
             if (isset($onixCodelist->Code) && is_array($onixCodelist->Code)) {
-                foreach ($onixCodelist->Code as $onixCodelistCode) {
+                foreach ($onixCodelist->Code as $onixCodelistCode) {                    
                     $code = new Code;
                     $code->codelist_id = $codelist->id;
                     $code->value = $onixCodelistCode->CodeValue;
                     $code->issue_number = $onixCodelistCode->IssueNumber;
+
+                    if(isset($onixCodelistCode->ModifiedNumber)) {                        
+                        $code->last_issue_modified_at = $onixCodelistCode->ModifiedNumber;
+                    }
+
                     $code->save();
 
                     // Save the english description and notes

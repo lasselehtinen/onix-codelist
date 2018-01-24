@@ -12,6 +12,7 @@
       <th>Description</th>
       <th>Notes</th>
       <th>Issue number</th>
+      <th>Modified in Issue</th>
     </tr>
   </thead>
   <tbody>
@@ -21,6 +22,7 @@
       <td>{{ $code->translate()->description }}</td>
       <td>{{ $code->translate()->notes }}</td>
       <td>{{ $code->issue_number }}</td>
+      <td>{{ $code->last_issue_modified_at }}</td>
     </tr>
     @endforeach
   </tbody>
