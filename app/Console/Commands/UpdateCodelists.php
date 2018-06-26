@@ -59,7 +59,7 @@ class UpdateCodelists extends Command
         Codelist::$autoIndex = false;
         Code::$autoIndex = false;
 
-        foreach ($onixCodelists->CodeList as $onixCodelist) {
+        foreach ($onixCodelists->ONIXCodeTable->CodeList as $onixCodelist) {
             // Create or update codelist
             $codelist = Codelist::firstOrCreate(['number' => $onixCodelist->CodeListNumber]);
             $codelist->issue_number = $onixCodelist->IssueNumber;
