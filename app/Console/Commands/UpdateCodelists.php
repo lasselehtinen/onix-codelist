@@ -24,7 +24,7 @@ class UpdateCodelists extends Command
      * @var string
      */
     protected $description = 'Updates codelists';
-
+ 
     /**
      * Guzzle client
      * @var GuzzleHttp\Client
@@ -58,8 +58,8 @@ class UpdateCodelists extends Command
         // Disable Algolia auto-indexing temporarily
         Codelist::$autoIndex = false;
         Code::$autoIndex = false;
-
-        foreach ($onixCodelists->CodeList as $onixCodelist) {
+        
+        foreach ($onixCodelists->ONIXCodeTable->CodeList as $onixCodelist) {
             // Create or update codelist
             $codelist = Codelist::firstOrCreate(['number' => $onixCodelist->CodeListNumber]);
             $codelist->issue_number = $onixCodelist->IssueNumber;
