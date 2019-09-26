@@ -4,6 +4,7 @@
 
 @section('content')
 <h1>List {{ $codelist->number }}: {{ $codelist->description }}</h1>
+<em>Last updated in issue {{ $codelist->codes->max('last_issue_modified_at') }}</em>
 
 <table class="table table-condensed table-hover">
   <thead>
